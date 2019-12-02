@@ -58,3 +58,7 @@
 
 #define xQuit 55
 #define yQuit 19
+
+#define BONUS_X2_TEXT '2'
+#define MINUS_TEXT '%'
+#define WALL_TEXT char(219)
