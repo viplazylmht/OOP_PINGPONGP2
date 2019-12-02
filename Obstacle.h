@@ -2,20 +2,24 @@
 
 #include "Point.h"
 #include "structBall.h"
+#include "constant.h"
+#include "functionConsole.h"
+#include <time.h>
+#include <math.h>
 
 using namespace std;
 
 class Obstacle
 {
-private:
+protected:
 	char _text;
-	Point _point;
+	Point _pos;
 	int _color;
 	bool _isVisible;
 
 public:
 	Obstacle();
-	Obstacle(char text, Point point, int color, bool isVisible);
+	Obstacle(char text, Point pos, int color, bool isVisible);
 	~Obstacle();
 
 // Get set
@@ -33,7 +37,11 @@ public:
 
 public:
 	void Draw();
-	virtual void Randome();
+	virtual void Random();
+	//call firt to collect array obstacle (2 array)
+	//Return: 0-not near
+	//		  1-near and place in EWSN
+	//		  2-near but not place in EWSN
 	//call firt to collect array obstacle (2 array)
 	int isNearBall(Ball ball);
 	//check if obstacle in array collide with ball or nor
