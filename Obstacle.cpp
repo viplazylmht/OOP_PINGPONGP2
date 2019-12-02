@@ -13,7 +13,6 @@ Obstacle::Obstacle(char text, Point pos, int color, bool isVisible)
 	_pos = pos;
 	_color = color;
 	_isVisible = isVisible;
-
 }
 
 Obstacle::~Obstacle()
@@ -57,7 +56,6 @@ int Obstacle::isNearBall(Ball ball)
 	{
 		return 2;
 	}
-
 	return 0;
 }
 
