@@ -15,6 +15,7 @@ public:
 	Game();
 	~Game();
 public:
+	Ball& GetBall();
 	int getCount();
 	int getPlayersScore();
 	int getComputersScore();

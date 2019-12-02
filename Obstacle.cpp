@@ -2,10 +2,18 @@
 
 Obstacle::Obstacle()
 {
+	_text = ' ';
+	_point = {0, 0};
+	_color = RED;
+	_isVisible = false;
 }
 
 Obstacle::Obstacle(char text, Point point, int color, bool isVisible)
 {
+	_text = text;
+	_point = point;
+	_color = color;
+	_isVisible = isVisible; 
 }
 
 Obstacle::~Obstacle()

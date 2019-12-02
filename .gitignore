@@ -333,3 +333,7 @@ ASALocalRun/
 Output/*.ilk
 Output/*.pdb
 Output/*.exe
+
+## data dir
+
+data/*
