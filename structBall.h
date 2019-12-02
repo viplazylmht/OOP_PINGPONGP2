@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Point.h"
+#include "functionConsole.h"
+#include "constant.h"
 
 class Ball
 {
@@ -22,4 +24,6 @@ public:
 
 	int HeadingY() { return _headingY; }
 	void SetHeadingY(int y) { _headingY = y; }
+
+	void Draw();
 };

@@ -28,6 +28,9 @@ void drawPlay()
 		game.Keypressed();
 		game.gameLogic();
 		game.moveBall();
+
+		game.GetBall().Draw();
+		
 		Sleep(50/game.getCount());
 
 		setTextColor(DARK_YELLOW);

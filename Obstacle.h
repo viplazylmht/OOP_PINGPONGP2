@@ -22,6 +22,19 @@ public:
 	Obstacle(char text, Point pos, int color, bool isVisible);
 	~Obstacle();
 
+// Get set
+public:
+	char GetText() { return _text; };
+	Point GetPoint() { return _pos; };
+	int GetColor() { return _color; };
+	bool IsVisible() { return _isVisible; };
+
+	void SetText(char text) { _text = text; };
+	void SetPoint(int x, int y) { _pos.x = x, _pos.y = y; };
+	void SetPoint(Point p) { _pos = p; };
+	void SetVisible(bool isVisible) { _isVisible = isVisible; };
+
+
 public:
 	void Draw();
 	virtual void Random();

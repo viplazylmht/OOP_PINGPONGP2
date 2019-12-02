@@ -1,4 +1,5 @@
 #pragma once
+#include "functionConsole.h"
 
 struct Pad 
 {
