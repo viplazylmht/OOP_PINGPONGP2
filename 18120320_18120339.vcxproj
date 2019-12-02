@@ -137,6 +137,7 @@
     <ClCompile Include="constant.cpp" />
     <ClCompile Include="functionConsole.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Obstacle.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="structBall.cpp" />
     <ClCompile Include="structPad.cpp" />
@@ -145,6 +146,8 @@
     <ClInclude Include="constant.h" />
     <ClInclude Include="functionConsole.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Obstacle.h" />
+    <ClInclude Include="Point.h" />
     <ClInclude Include="structBall.h" />
     <ClInclude Include="structPad.h" />
   </ItemGroup>
