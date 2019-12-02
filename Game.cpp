@@ -28,7 +28,7 @@ Game::~Game()
 // Di chuyen ball
 void Game::moveBall()
 {
-	txtPlot(ball.x, ball.y, DARK_YELLOW);
+	txtPlot(ball.X(), ball.Y(), DARK_YELLOW);
 	txtLine(PlayersPad.x, PlayersPad.y, PlayersPad.x, PlayersPad.y + 3, DARK_BLUE);
 	txtLine(computersPad.x, computersPad.y, computersPad.x, computersPad.y + 3, DARK_RED);
 }
@@ -39,7 +39,7 @@ void Game::moveBall()
 // xoa ball cu
 void Game::removeBall()
 {
-	txtPlot(ball.x, ball.y, 0);
+	txtPlot(ball.X(), ball.Y(), 0);
 	txtLine(PlayersPad.x, PlayersPad.y, PlayersPad.x, PlayersPad.y + 3, 0);
 	txtLine(computersPad.x, computersPad.y, computersPad.x, computersPad.y + 3, 0);
 }
@@ -50,15 +50,16 @@ void Game::removeBall()
 // Kiem tra game da ket thuc chua, xu li thang thua
 void Game::gameLogic()
 {
-	
-	ball.x += ball.headingX;      //Cap nhat vi tri cua ball
-	ball.y += ball.headingY;
+	Point newPos;
+	newPos.x = ball.X() + ball.HeadingX();
+	newPos.y = ball.Y() + ball.HeadingY();
+	ball.SetPos(newPos);
 
-
-
-	//Kiem tra xem ball da cham tuong tren hoac duoi chua, neu co thi dao nguoc headingY
-	if ((ball.y < SCREEN_TOP) || (ball.y > SCREEN_BOTTOM - 2)) 
-		ball.headingY = -ball.headingY;
+	//Kiem tra xem ball da cham tuong tren hoac duoi chua, neu co thi dao nguoc HeadingY()
+	if ((ball.Y() < SCREEN_TOP) || (ball.Y() > SCREEN_BOTTOM - 2))
+	{
+		ball.SetHeadingY(-ball.HeadingY());
+	}
 
 	PlayersPad.LEFT = PlayersPad.y - 3;
 	PlayersPad.RIGHT = PlayersPad.y + 5;
@@ -66,18 +67,16 @@ void Game::gameLogic()
 	computersPad.RIGHT = computersPad.y + 5;
 
 	//Kiem tra su va cham cua ball va pad
-	if ((ball.y >= PlayersPad.LEFT) && (ball.y <= PlayersPad.RIGHT) && (ball.x == PlayersPad.x))
+	if ((ball.Y() >= PlayersPad.LEFT) && (ball.Y() <= PlayersPad.RIGHT) && (ball.X() == PlayersPad.x))
 	{
-
-		ball.headingX = -ball.headingX;
+		ball.SetHeadingX(-ball.HeadingX());
 		playersScore += 10;
 		count /= 0.9;
 	}
 
-	if ((ball.y >= computersPad.LEFT) && (ball.y <= computersPad.RIGHT) && (ball.x == computersPad.x))
+	if ((ball.Y() >= computersPad.LEFT) && (ball.Y() <= computersPad.RIGHT) && (ball.X() == computersPad.x))
 	{
-
-		ball.headingX = -ball.headingX;
+		ball.SetHeadingX(-ball.HeadingX());
 		computersScore += 10;
 	}
 
@@ -85,30 +84,28 @@ void Game::gameLogic()
 	if (isPlayer2 < 0)
 	{
 		/* let computer track ball's movement */
-		if (ball.x > SCREEN_RIGHT - 18) computersPad.y = ball.y;
-		if ((ball.x > SCREEN_RIGHT))
+		if (ball.X() > SCREEN_RIGHT - 18) computersPad.y = ball.Y();
+		if ((ball.X() > SCREEN_RIGHT))
 		{
-			ball.headingX = -ball.headingX;
+			ball.SetHeadingX(-ball.HeadingX());
 			computersScore += 10;
 		}
 	}
 
 
 	//Kiem tra neu ball khong cham pad
-	if (ball.x < SCREEN_LEFT)
+	if (ball.X() < SCREEN_LEFT)
 	{
 		displayYouMissed();
-		ball.x = 75;
-		ball.y = 15;
+		ball.SetPos({ 75,15 });
 		computersScore += 10;
 
 	}
-	if (ball.x > SCREEN_RIGHT + 1)
+	if (ball.X() > SCREEN_RIGHT + 1)
 	{
 	
 		displayYouMissed();
-		ball.x = 15;
-		ball.y = 15;
+		ball.SetPos({ 15,15 });
 		playersScore += 10;
 	}
 }
@@ -121,10 +118,9 @@ void  Game::initGame()
 
 	playersScore = 0;
 	computersScore = 0;
-	ball.x = 15;
-	ball.y = 5;
-	ball.headingX = 1;
-	ball.headingY = 1;
+	ball.SetPos({ 15,5 });
+	ball.SetHeadingX(1);
+	ball.SetHeadingY(1);
 	count = 1;
 
 	PlayersPad.x = 5;
