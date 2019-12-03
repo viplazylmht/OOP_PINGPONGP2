@@ -17,3 +17,17 @@ void Bonus::Random()
 		_text = MINUS_TEXT;
 	}
 }
+
+void Bonus::CollidePoccess(int& point, Ball& ball)
+{
+	Obstacle::CollidePoccess(point, ball);
+
+	if (_text == BONUS_X2_TEXT)
+	{
+		point *= 2;
+	}
+	if (_text == MINUS_TEXT)
+	{
+		point /= 2;
+	}
+}
