@@ -30,3 +30,8 @@ void Bonus::CollidePoccess(int& point, Ball& ball)
 		point /= 2;
 	}
 }
+
+Bonus::Bonus() : Obstacle()
+{
+	Random();
+}

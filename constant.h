@@ -54,10 +54,13 @@
 #define yNewgame 15
 
 #define xLoadgame 55
-#define yLoadgame 17
+#define yLoadgame 19
+
+#define xEatingGame 55
+#define yEatingGame 17
 
 #define xQuit 55
-#define yQuit 19
+#define yQuit 21
 
 #define BONUS_X2_TEXT '2'
 #define MINUS_TEXT '%'

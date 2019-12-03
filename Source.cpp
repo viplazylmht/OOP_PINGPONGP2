@@ -12,6 +12,41 @@ using namespace std;
 
 Game game;
 void draw();
+
+void DrawBackground()
+{
+	setTextColor(DARK_YELLOW);
+	ifstream fileTitle("pong.txt", ios::in | ios::out);
+	int xTitle = SCREEN_RIGHT + 1;
+	int yTitle = 0;
+	while (!fileTitle.eof())
+	{
+		char lineTemp[255] = "";
+		fileTitle.getline(lineTemp, 255);
+		gotoXY(xTitle, yTitle);
+		cout << lineTemp << endl;
+		yTitle++;
+	}
+
+
+	setTextColor(DARK_CYAN);
+	gotoXY(85, 10);
+	cout << "W : up pad player 1";
+	gotoXY(85, 11);
+	cout << "S : down pad player 1";
+	gotoXY(85, 13);
+	cout << "UP : up pad player 2";
+	gotoXY(85, 14);
+	cout << "DOWN : up pad player 2";
+	gotoXY(85, 16);
+	cout << "TAB : switch between the mode";
+	gotoXY(85, 17);
+	cout << "N: new game";
+	gotoXY(45, 15);
+	game.removeBall();
+
+}
+
 // INPUT:
 // OUTPUT:
 // Vong lap chinh cua game
@@ -33,36 +68,7 @@ void drawPlay()
 		
 		Sleep(50/game.getCount());
 
-		setTextColor(DARK_YELLOW);
-		ifstream fileTitle("pong.txt", ios::in | ios::out);
-		int xTitle = SCREEN_RIGHT + 1;
-		int yTitle = 0;
-		while (!fileTitle.eof())
-		{
-			char lineTemp[255] = "";
-			fileTitle.getline(lineTemp, 255);
-			gotoXY(xTitle, yTitle);
-			cout << lineTemp << endl;
-			yTitle++;
-		}
-		
-
-		setTextColor(DARK_CYAN);
-		gotoXY(85, 10);
-		cout << "W : up pad player 1";
-		gotoXY(85, 11);
-		cout << "S : down pad player 1";
-		gotoXY(85, 13);
-		cout << "UP : up pad player 2";
-		gotoXY(85, 14);
-		cout << "DOWN : up pad player 2";
-		gotoXY(85, 16);
-		cout << "TAB : switch between the mode";
-		gotoXY(85, 17);
-		cout << "N: new game";
-		gotoXY(45, 15);
-		game.removeBall();
-
+		DrawBackground();
 		
 		if (game.getIsPlayer2() == -1)
 		{
@@ -82,6 +88,31 @@ void drawPlay()
 			setTextColor(31); gotoXY(20, 22); cout << "Player1 Score:          " << game.getPlayersScore(); setTextColor(15);
 			setTextColor(79); gotoXY(20, 23); cout << "Player2 Score:          " << game.getComputersScore(); setTextColor(15);
 		}
+	}
+}
+
+//play eating game
+void EatingGame()
+{
+	game.clrscr();
+	game.initGame();
+
+	char keyPressed;
+	keyPressed = _getch();
+
+	while (keyPressed != key_ESCAPE)
+	{
+		game.Keypressed();
+		//game.gameLogic();
+		//game.moveBall();
+
+		//game.GetBall().Draw();
+
+		Sleep(50 / game.getCount());
+
+		DrawBackground();
+
+		
 	}
 }
 
@@ -288,6 +319,9 @@ void draw()
 	setTextColor(CYAN);
 	gotoXY(xNewgame, yNewgame);
 	cout << "NEW GAME";
+	setTextColor(CYAN);
+	gotoXY(xEatingGame, yEatingGame);
+	cout << "NEW EATING GAME";
 	setTextColor(PINK);
 	gotoXY(xLoadgame, yLoadgame);
 	cout << "LOAD GAME";
@@ -334,6 +368,12 @@ void draw()
 			{
 				flag = false;
 				newgame();
+			}
+			if (curPosPointer == yEatingGame)
+			{
+				//play eating game
+				flag = false;
+				EatingGame();
 			}
 			if (curPosPointer == yLoadgame) {}
 			if (curPosPointer == yQuit) 

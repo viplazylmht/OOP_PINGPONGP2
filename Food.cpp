@@ -11,3 +11,8 @@ void Food::CollidePoccess(int& point, Ball& ball)
 	
 	point++;
 }
+
+Food::Food() : Obstacle()
+{
+	Random();
+}
