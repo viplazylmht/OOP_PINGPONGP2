@@ -44,6 +44,10 @@ void Obstacle::Random()
 
 int Obstacle::isNearBall(Ball ball)
 {
+	if (!_isVisible)
+	{
+		return 0;
+	}
 	int dentalX = abs(ball.Pos().y - _pos.y);
 	int dentalY = abs(ball.Pos().x - _pos.x);
 	if ((ball.Pos().x == _pos.x &&  dentalY== 1)
@@ -71,7 +75,23 @@ bool Obstacle::isCollide(Ball ball)
 	return false;
 }
 
-void Obstacle::CollidePocess(int& point, Ball& ball)
+void Obstacle::CollidePoccess(int& point, Ball& ball)
 {
-	_isVisible = false;
+	//proccess ball
+	//if collide with corner
+	if (ball.X() + ball.HeadingX() == _pos.x && ball.Y() + ball.HeadingY() == _pos.y)
+	{
+		ball.SetHeadingX(-ball.HeadingX());
+		ball.SetHeadingY(-ball.HeadingY());
+	}
+	//if collide edge x
+	else if (ball.X() + ball.HeadingX() == _pos.x)
+	{
+		ball.SetHeadingX(-ball.HeadingX());
+	}
+	//if collide edge y
+	else if (ball.Y() + ball.HeadingY() == _pos.x)
+	{
+		ball.SetHeadingY(-ball.HeadingY());
+	}
 }
