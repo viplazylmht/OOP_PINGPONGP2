@@ -10,3 +10,8 @@ void Wall::CollidePoccess(int& point, Ball& ball)
 {
 	Obstacle::CollidePoccess(point, ball);
 }
+
+Wall::Wall() : Obstacle()
+{
+	Random();
+}

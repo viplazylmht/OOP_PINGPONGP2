@@ -7,5 +7,7 @@ class Wall : public Obstacle
 public:
 	void Random();
 	void CollidePoccess(int& point, Ball& ball);
+public:
+	Wall();
 };
 

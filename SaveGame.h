@@ -22,7 +22,7 @@ public:
 
     static void SaveGameState(string& name, Ball&, Pad&, vector<Obstacle>&, int& score);
     static void LoadGameState(string& name, Ball&, Pad&, vector<Obstacle>&, int& score);
-    static vector<string> SaveGame::Tokenlizer(string line, char SEPERATOR);
+    static vector<string> Tokenlizer(string line, char SEPERATOR);
 
     static void LoadRanking(vector<Top>& ranking);
     
