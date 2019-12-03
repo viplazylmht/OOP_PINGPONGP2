@@ -29,6 +29,7 @@ public:
 	//Return: 0-not near
 	//		  1-near and place in EWSN
 	//		  2-near but not place in EWSN
+	//call firt to collect array obstacle (2 array)
 	int isNearBall(Ball ball);
 	//check if obstacle in array collide with ball or nor
 	bool isCollide(Ball ball);
