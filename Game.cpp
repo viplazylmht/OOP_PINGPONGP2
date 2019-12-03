@@ -28,7 +28,7 @@ Game::~Game()
 // Di chuyen ball
 void Game::moveBall()
 {
-	txtPlot(ball.X(), ball.Y(), DARK_YELLOW);
+	//txtPlot(ball.X(), ball.Y(), DARK_YELLOW);
 	txtLine(PlayersPad.x, PlayersPad.y, PlayersPad.x, PlayersPad.y + 3, DARK_BLUE);
 	txtLine(computersPad.x, computersPad.y, computersPad.x, computersPad.y + 3, DARK_RED);
 }
@@ -287,6 +287,12 @@ int Game::getPlayersScore()
 int Game::getComputersScore()
 {
 	return computersScore;
+}
+
+Ball& Game::GetBall()
+{
+	return ball;
+	// TODO: insert return statement here
 }
 
 // INPUT:
