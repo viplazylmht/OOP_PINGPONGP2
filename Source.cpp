@@ -56,25 +56,22 @@ void drawPlay()
 {
 	game.clrscr();
 	game.initGame();
-
+	
 	char keyPressed;
 	keyPressed = _getch();
 	DrawBackground();
 	
 	while (keyPressed != key_ESCAPE)
 	{
-
 		game.GetBall().Draw();
-		game.moveBall();
+		game.DrawPads();
 
-		Sleep(50/game.getCount());
+		Sleep(100 / game.getCount());
 
-		game.removeBall();
-
-		game.Keypressed();
 		game.gameLogic();
 
-		DrawBackground();
+		game.MoveBall();
+		game.Keypressed();
 		
 		if (game.getIsPlayer2() == -1)
 		{
@@ -208,7 +205,8 @@ void EatingGame()
 	int score = 0;
 	game.clrscr();
 	game.initGame();
-
+	game.GetComputerPad().SetVisible(false);
+	
 	DrawBackground();
 	//crete food
 	vector<shared_ptr<Obstacle>> obstacles = CreateObstacles();
@@ -220,18 +218,19 @@ void EatingGame()
 	{
 		//draw ball and player
 		game.GetBall().Draw();
-		game.txtLine(game.GetPlayerPad().x, game.GetPlayerPad().y, game.GetPlayerPad().x, game.GetPlayerPad().y + 3, DARK_BLUE);
+		game.DrawPads();
 
 		//draw obstacle
 		DrawObstacles(obstacles);
 
 		CheckAndProccessBallCollideWithObstacles(obstacles, game.GetBall(), score);
 
-		Sleep(50 / game.getCount());
-
 		//delete old ball and player on screen
 		game.removeBall();
+		Sleep(100 / game.getCount());
 
+
+		game.MoveBall();
 		game.Keypressed();
 		int isPlaying = game.gameLogicEatingGame();
 

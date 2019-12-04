@@ -42,6 +42,8 @@
 #define SCREEN_TOP 2
 #define SCREEN_BOTTOM 22
 
+#define PAD_LENGTH 3
+
 #define WALL_UP    0
 #define WALL_RIGHT 118
 #define WALL_LEFT  0
