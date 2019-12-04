@@ -61,20 +61,18 @@ void Game::gameLogic()
 		ball.SetHeadingY(-ball.HeadingY());
 	}
 
-	PlayersPad.LEFT = PlayersPad.y - 3;
-	PlayersPad.RIGHT = PlayersPad.y + 5;
-	computersPad.LEFT = computersPad.y - 3;
-	computersPad.RIGHT = computersPad.y + 5;
+	PlayersPad.RIGHT = PlayersPad.y + 3;
+	computersPad.RIGHT = computersPad.y + 3;
 
 	//Kiem tra su va cham cua ball va pad
-	if ((ball.Y() >= PlayersPad.LEFT) && (ball.Y() <= PlayersPad.RIGHT) && (ball.X() == PlayersPad.x))
+	if ((ball.Y() >= PlayersPad.LEFT) && (ball.Y() <= PlayersPad.RIGHT) && (ball.X() <= PlayersPad.x + 1))
 	{
 		ball.SetHeadingX(-ball.HeadingX());
 		playersScore += 10;
 		count /= 0.9;
 	}
 
-	if ((ball.Y() >= computersPad.LEFT) && (ball.Y() <= computersPad.RIGHT) && (ball.X() == computersPad.x))
+	if ((ball.Y() >= computersPad.LEFT) && (ball.Y() <= computersPad.RIGHT) && (ball.X() >= computersPad.x - 1))
 	{
 		ball.SetHeadingX(-ball.HeadingX());
 		computersScore += 10;
@@ -92,21 +90,68 @@ void Game::gameLogic()
 		}
 	}
 
-
 	//Kiem tra neu ball khong cham pad
-	if (ball.X() < SCREEN_LEFT)
+	if (ball.X() <= GAME_BORDER_LEFT)
 	{
 		displayYouMissed();
-		ball.SetPos({ 75,15 });
+		ball.SetPos({ 15,15 });
+	}
+	if (ball.X() >= GAME_BORDER_RIGHT)
+	{
+		displayYouMissed();
+		ball.SetPos({ 15,15 });
+	}
+}
+
+void Game::gameLogicEatingGame()
+{
+	Point newPos;
+	newPos.x = ball.X() + ball.HeadingX();
+	newPos.y = ball.Y() + ball.HeadingY();
+	ball.SetPos(newPos);
+
+	//Kiem tra xem ball da cham tuong tren hoac duoi chua, neu co thi dao nguoc HeadingY()
+	if ((ball.Y() < SCREEN_TOP) || (ball.Y() > SCREEN_BOTTOM - 2))
+	{
+		ball.SetHeadingY(-ball.HeadingY());
+	}
+
+	PlayersPad.LEFT = PlayersPad.y;
+	PlayersPad.RIGHT = PlayersPad.y + 3;
+
+	//Kiem tra su va cham cua ball va pad
+	if ((ball.Y() >= PlayersPad.LEFT) && (ball.Y() <= PlayersPad.RIGHT) && (ball.X() <= PlayersPad.x + 1))
+	{
+		ball.SetHeadingX(-ball.HeadingX());
+		playersScore += 10;
+		count /= 0.9;
+	}
+
+	/* if cheat enabled,let player track ball's movement */
+	//if (isPlayer2 < 0)
+	//{
+	//	/* let computer track ball's movement */
+	//	if (ball.X() > SCREEN_RIGHT - 18) computersPad.y = ball.Y();
+	//	if ((ball.X() > SCREEN_RIGHT))
+	//	{
+	//		ball.SetHeadingX(-ball.HeadingX());
+	//		computersScore += 10;
+	//	}
+	//}
+
+
+	//Kiem tra neu ball khong cham pad
+	if (ball.X() <= GAME_BORDER_LEFT)
+	{
+		displayYouMissed();
+		ball.SetPos({ 45,15 });
 		computersScore += 10;
 
 	}
-	if (ball.X() > SCREEN_RIGHT + 1)
+
+	if (ball.X() >= GAME_BORDER_RIGHT - 1)
 	{
-	
-		displayYouMissed();
-		ball.SetPos({ 15,15 });
-		playersScore += 10;
+		ball.SetHeadingX(-ball.HeadingX());
 	}
 }
 
@@ -125,16 +170,20 @@ void  Game::initGame()
 
 	PlayersPad.x = 5;
 	PlayersPad.y = 12;
-	computersPad.x = 75;
+	computersPad.x = 73;
 	computersPad.y = 12;
 
 	//displayCheatEnabled();
 
 	setTextColor(15);
 	clrscr();
-	txtLine(6, 0, 74, 0, GREY);
-	txtLine(6, 22, 74, 22, GREY);
-	txtLine(6, 23, 74, 23, GREY);
+	txtLine(GAME_BORDER_LEFT, 0, GAME_BORDER_RIGHT, 0, GREY);
+	txtLine(GAME_BORDER_LEFT, 22, GAME_BORDER_RIGHT, 22, GREY);
+	txtLine(GAME_BORDER_LEFT, 23, GAME_BORDER_RIGHT, 23, GREY);
+
+	// Vertical lile 
+	txtLine(GAME_BORDER_LEFT, 0, GAME_BORDER_LEFT, 23, GREY);
+	txtLine(GAME_BORDER_RIGHT, 0, GAME_BORDER_RIGHT, 23, GREY);
 
 
 	if (isPlayer2 > 0)
@@ -196,27 +245,21 @@ void Game::Keypressed()
 			break;
 
 		case key_UP:
-			computersPad.y -= 3; if (computersPad.y < 0)computersPad.y = 0;
+			computersPad.y -= 1; if (computersPad.y <= GAME_BORDER_TOP)computersPad.y = GAME_BORDER_TOP + 1;
 			break;
 
 		case key_DOWN:
-			computersPad.y += 3; if (computersPad.y > 18) computersPad.y = 18;
+			computersPad.y += 1; if (computersPad.RIGHT >= GAME_BORDER_BOTTOM) computersPad.y = GAME_BORDER_BOTTOM - 5;
 			break;
 
 		case key_w:
-			PlayersPad.y -= 3; if (PlayersPad.y < 0) PlayersPad.y = 0;
+		case key_W:
+			PlayersPad.y -= 1; if (PlayersPad.y <= GAME_BORDER_TOP) PlayersPad.y = GAME_BORDER_TOP + 1;
 			break;
 
 		case key_s:
-			PlayersPad.y += 3; if (PlayersPad.y > 18) PlayersPad.y = 18;
-			break;
-
-		case key_W:
-			PlayersPad.y -= 3; if (PlayersPad.y < 0) PlayersPad.y = 0;
-			break;
-
 		case key_S:
-			PlayersPad.y += 3; if (PlayersPad.y > 18) PlayersPad.y = 18;
+			PlayersPad.y += 1; if (PlayersPad.RIGHT >= GAME_BORDER_BOTTOM) PlayersPad.y = GAME_BORDER_BOTTOM - 5;
 			break;
 
 		case key_ENTER:
@@ -227,12 +270,11 @@ void Game::Keypressed()
 			exit(0);
 			break;
 
-		case key_n: 
-			initGame();
-			break;
+		case key_n:
 		case key_N:
 			initGame();
 			break;
+
 		case key_TAB:
 			isPlayer2 = -isPlayer2;
 			if (isPlayer2 > 0)
@@ -293,6 +335,11 @@ Ball& Game::GetBall()
 {
 	return ball;
 	// TODO: insert return statement here
+}
+
+Pad& Game::GetPlayerPad()
+{
+	return PlayersPad;
 }
 
 // INPUT:
