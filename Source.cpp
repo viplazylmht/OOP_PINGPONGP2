@@ -43,8 +43,6 @@ void DrawBackground()
 	gotoXY(85, 17);
 	cout << "N: new game";
 	gotoXY(45, 15);
-	game.removeBall();
-
 }
 
 // INPUT:
@@ -57,16 +55,20 @@ void drawPlay()
 
 	char keyPressed;
 	keyPressed = _getch();
+	DrawBackground();
 	
 	while (keyPressed != key_ESCAPE)
 	{
-		game.Keypressed();
-		game.gameLogic();
-		game.moveBall();
 
 		game.GetBall().Draw();
-		
+		game.moveBall();
+
 		Sleep(50/game.getCount());
+
+		game.removeBall();
+
+		game.Keypressed();
+		game.gameLogic();
 
 		DrawBackground();
 		
@@ -97,22 +99,27 @@ void EatingGame()
 	game.clrscr();
 	game.initGame();
 
+	DrawBackground();
+	
 	char keyPressed;
 	keyPressed = _getch();
 
 	while (keyPressed != key_ESCAPE)
 	{
-		game.Keypressed();
-		//game.gameLogic();
-		//game.moveBall();
-
-		//game.GetBall().Draw();
+		game.GetBall().Draw();
+		game.txtLine(game.GetPlayerPad().x, game.GetPlayerPad().y, game.GetPlayerPad().x, game.GetPlayerPad().y + 3, DARK_BLUE);
 
 		Sleep(50 / game.getCount());
 
-		DrawBackground();
+		game.removeBall();
 
+		game.Keypressed();
+		game.gameLogicEatingGame();
 		
+		// display score
+		setTextColor(31); 
+		gotoXY(20, 22); cout << "Your Score:             " << game.getPlayersScore();
+		setTextColor(15);
 	}
 }
 
@@ -239,7 +246,6 @@ void draw()
 		gotoXY(i, WALL_UP);
 		cout << char(219);
 		gotoXY(i, WALL_DOWN);
-
 		cout << char(219);
 	}
 
