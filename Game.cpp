@@ -195,7 +195,6 @@ void  Game::initGame()
 	txtLine(GAME_BORDER_LEFT, 0, GAME_BORDER_LEFT, 23, GREY);
 	txtLine(GAME_BORDER_RIGHT, 0, GAME_BORDER_RIGHT, 23, GREY);
 
-
 	if (isPlayer2 > 0)
 	{
 		setTextColor(79); gotoXY(62, 23); cout << " 2 Player "; setTextColor(15);
