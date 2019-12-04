@@ -18,19 +18,11 @@ using namespace std;
 
 Game::Game()
 {
+	PlayersPad = Pad(0, 0, PAD_LENGTH);
+	computersPad = Pad(0, 0, PAD_LENGTH);
 }
 Game::~Game()
 {
-}
-
-// INPUT:
-// OUTPUT:
-// Di chuyen ball
-void Game::moveBall()
-{
-	//txtPlot(ball.X(), ball.Y(), DARK_YELLOW);
-	txtLine(PlayersPad.x, PlayersPad.y, PlayersPad.x, PlayersPad.y + 3, DARK_BLUE);
-	txtLine(computersPad.x, computersPad.y, computersPad.x, computersPad.y + 3, DARK_RED);
 }
 
 //
@@ -39,9 +31,19 @@ void Game::moveBall()
 // xoa ball cu
 void Game::removeBall()
 {
-	txtPlot(ball.X(), ball.Y(), 0);
-	txtLine(PlayersPad.x, PlayersPad.y, PlayersPad.x, PlayersPad.y + 3, 0);
-	txtLine(computersPad.x, computersPad.y, computersPad.x, computersPad.y + 3, 0);
+	ball.Erase();
+}
+
+void Game::removePads()
+{
+	PlayersPad.Erase();
+	computersPad.Erase();
+}
+
+void Game::DrawPads()
+{
+	PlayersPad.Draw(DARK_BLUE);
+	computersPad.Draw(DARK_RED);
 }
 
 //
@@ -50,29 +52,21 @@ void Game::removeBall()
 // Kiem tra game da ket thuc chua, xu li thang thua
 void Game::gameLogic()
 {
-	Point newPos;
-	newPos.x = ball.X() + ball.HeadingX();
-	newPos.y = ball.Y() + ball.HeadingY();
-	ball.SetPos(newPos);
-
 	//Kiem tra xem ball da cham tuong tren hoac duoi chua, neu co thi dao nguoc HeadingY()
 	if ((ball.Y() < SCREEN_TOP) || (ball.Y() > SCREEN_BOTTOM - 2))
 	{
 		ball.SetHeadingY(-ball.HeadingY());
 	}
 
-	PlayersPad.RIGHT = PlayersPad.y + 3;
-	computersPad.RIGHT = computersPad.y + 3;
-
 	//Kiem tra su va cham cua ball va pad
-	if ((ball.Y() >= PlayersPad.LEFT) && (ball.Y() <= PlayersPad.RIGHT) && (ball.X() <= PlayersPad.x + 1))
+	if ((ball.Y() >= PlayersPad.HeadY()) && (ball.Y() <= PlayersPad.HeadY() + PlayersPad.Length()) && (ball.X() <= PlayersPad.HeadX() + 1))
 	{
 		ball.SetHeadingX(-ball.HeadingX());
 		playersScore += 10;
 		count /= 0.9;
 	}
 
-	if ((ball.Y() >= computersPad.LEFT) && (ball.Y() <= computersPad.RIGHT) && (ball.X() >= computersPad.x - 1))
+	if ((ball.Y() >= computersPad.HeadY()) && (ball.Y() <= computersPad.HeadY() + PlayersPad.Length()) && (ball.X() >= computersPad.HeadX() - 1))
 	{
 		ball.SetHeadingX(-ball.HeadingX());
 		computersScore += 10;
@@ -82,8 +76,21 @@ void Game::gameLogic()
 	if (isPlayer2 < 0)
 	{
 		/* let computer track ball's movement */
-		if (ball.X() > SCREEN_RIGHT - 18) computersPad.y = ball.Y();
-		if ((ball.X() > SCREEN_RIGHT))
+		if (ball.X() > GAME_BORDER_RIGHT / 2) {
+			if (ball.Y() < computersPad.HeadY() + computersPad.Length() / 2) {
+				computersPad.MoveUp();
+			}
+			else computersPad.MoveDown();
+		}
+		else {
+			// computer go to center
+			if ((GAME_BORDER_BOTTOM - GAME_BORDER_TOP) / 2 < computersPad.HeadY() + computersPad.Length() / 2) {
+				computersPad.MoveUp();
+			}
+			else computersPad.MoveDown();
+		}
+
+		if ((ball.X() >= GAME_BORDER_RIGHT - 1))
 		{
 			ball.SetHeadingX(-ball.HeadingX());
 			computersScore += 10;
@@ -91,36 +98,30 @@ void Game::gameLogic()
 	}
 
 	//Kiem tra neu ball khong cham pad
-	if (ball.X() <= GAME_BORDER_LEFT)
+	if (ball.X() <= GAME_BORDER_LEFT + 1)
 	{
 		displayYouMissed();
+		ball.Erase();
 		ball.SetPos({ 15,15 });
 	}
-	if (ball.X() >= GAME_BORDER_RIGHT)
+	if (ball.X() >= GAME_BORDER_RIGHT - 1)
 	{
 		displayYouMissed();
+		ball.Erase();
 		ball.SetPos({ 15,15 });
 	}
 }
 
 void Game::gameLogicEatingGame()
 {
-	Point newPos;
-	newPos.x = ball.X() + ball.HeadingX();
-	newPos.y = ball.Y() + ball.HeadingY();
-	ball.SetPos(newPos);
-
 	//Kiem tra xem ball da cham tuong tren hoac duoi chua, neu co thi dao nguoc HeadingY()
 	if ((ball.Y() < SCREEN_TOP) || (ball.Y() > SCREEN_BOTTOM - 2))
 	{
 		ball.SetHeadingY(-ball.HeadingY());
 	}
 
-	PlayersPad.LEFT = PlayersPad.y;
-	PlayersPad.RIGHT = PlayersPad.y + 3;
-
 	//Kiem tra su va cham cua ball va pad
-	if ((ball.Y() >= PlayersPad.LEFT) && (ball.Y() <= PlayersPad.RIGHT) && (ball.X() <= PlayersPad.x + 1))
+	if ((ball.Y() >= PlayersPad.HeadY()) && (ball.Y() <= PlayersPad.HeadY() + PlayersPad.Length()) && (ball.X() <= PlayersPad.HeadX() + 1))
 	{
 		ball.SetHeadingX(-ball.HeadingX());
 		playersScore += 10;
@@ -141,9 +142,10 @@ void Game::gameLogicEatingGame()
 
 
 	//Kiem tra neu ball khong cham pad
-	if (ball.X() <= GAME_BORDER_LEFT)
+	if (ball.X() <= GAME_BORDER_LEFT + 1)
 	{
 		displayYouMissed();
+		ball.Erase();
 		ball.SetPos({ 45,15 });
 		computersScore += 10;
 
@@ -153,6 +155,16 @@ void Game::gameLogicEatingGame()
 	{
 		ball.SetHeadingX(-ball.HeadingX());
 	}
+}
+
+void Game::MoveBall()
+{
+	Point newPos;
+	newPos.x = ball.X() + ball.HeadingX();
+	newPos.y = ball.Y() + ball.HeadingY();
+
+	ball.Erase();
+	ball.SetPos(newPos);
 }
 
 // INPUT:
@@ -168,11 +180,9 @@ void  Game::initGame()
 	ball.SetHeadingY(1);
 	count = 1;
 
-	PlayersPad.x = 5;
-	PlayersPad.y = 12;
-	computersPad.x = 73;
-	computersPad.y = 12;
-
+	PlayersPad.SetPoint({ 5, 12 });
+	computersPad.SetPoint({ 73, 12 });
+	
 	//displayCheatEnabled();
 
 	setTextColor(15);
@@ -184,7 +194,6 @@ void  Game::initGame()
 	// Vertical lile 
 	txtLine(GAME_BORDER_LEFT, 0, GAME_BORDER_LEFT, 23, GREY);
 	txtLine(GAME_BORDER_RIGHT, 0, GAME_BORDER_RIGHT, 23, GREY);
-
 
 	if (isPlayer2 > 0)
 	{
@@ -220,9 +229,7 @@ void Game::displayYouMissed()
 		clrscr();
 		exit(0);
 	}
-	clrbox(10, 8, 75, 21, 0);
-
-
+	clrbox(10, 8, 71, 21, 0);
 }
 
 // INPUT: 
@@ -245,21 +252,21 @@ void Game::Keypressed()
 			break;
 
 		case key_UP:
-			computersPad.y -= 1; if (computersPad.y <= GAME_BORDER_TOP)computersPad.y = GAME_BORDER_TOP + 1;
+			computersPad.MoveUp();
 			break;
 
 		case key_DOWN:
-			computersPad.y += 1; if (computersPad.RIGHT >= GAME_BORDER_BOTTOM) computersPad.y = GAME_BORDER_BOTTOM - 5;
+			computersPad.MoveDown();
 			break;
 
 		case key_w:
 		case key_W:
-			PlayersPad.y -= 1; if (PlayersPad.y <= GAME_BORDER_TOP) PlayersPad.y = GAME_BORDER_TOP + 1;
+			PlayersPad.MoveUp();
 			break;
 
 		case key_s:
 		case key_S:
-			PlayersPad.y += 1; if (PlayersPad.RIGHT >= GAME_BORDER_BOTTOM) PlayersPad.y = GAME_BORDER_BOTTOM - 5;
+			PlayersPad.MoveDown();
 			break;
 
 		case key_ENTER:
@@ -342,6 +349,11 @@ Pad& Game::GetPlayerPad()
 	return PlayersPad;
 }
 
+Pad& Game::GetComputerPad()
+{
+	return computersPad;
+}
+
 // INPUT:
 // OUTPUT:
 // tra ra so lan va cham cua ball va pad
@@ -416,61 +428,3 @@ void Game::clrbox(unsigned char x1, unsigned char y1, unsigned char x2, unsigned
 		}
 	}
 }
-
-//
-// INPUT:
-// OUTPUT:
-// Ve mot ki tu tai mot vi tri truyen vao
-//
-void Game::txtPlot(unsigned char x, unsigned char y, unsigned char Color)
-{
-	setTextColor(Color);
-	gotoXY(x, y); cout << char(219);
-}
-
-//
-//
-//
-void Game::txtLine(int x0, int y0, int x1, int y1, int color)
-{
-	int pix = color;
-	int dy = y1 - y0;
-	int dx = x1 - x0;
-	int stepx, stepy;
-
-	if (dy < 0) { dy = -dy;  stepy = -1; }
-	else { stepy = 1; }
-	if (dx < 0) { dx = -dx;  stepx = -1; }
-	else { stepx = 1; }
-	dy <<= 1;                                                  // dy is now 2*dy
-	dx <<= 1;                                                  // dx is now 2*dx
-
-	txtPlot(x0, y0, pix);
-	if (dx > dy) {
-		int fraction = dy - (dx >> 1);                         // same as 2*dy - dx
-		while (x0 != x1) {
-			if (fraction >= 0) {
-				y0 += stepy;
-				fraction -= dx;                                // same as fraction -= 2*dx
-			}
-			x0 += stepx;
-			fraction += dy;                                    // same as fraction -= 2*dy
-			txtPlot(x0, y0, pix);
-		}
-	}
-	else {
-		int fraction = dx - (dy >> 1);
-		while (y0 != y1) {
-			if (fraction >= 0) {
-				x0 += stepx;
-				fraction -= dy;
-			}
-			y0 += stepy;
-			fraction += dx;
-			txtPlot(x0, y0, pix);
-		}
-	}
-}
-//
-
-
