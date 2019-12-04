@@ -27,7 +27,8 @@ public:
 	void initGame();
 	void Keypressed();
 	void gameLogic();
-	void gameLogicEatingGame();
+	//Return: false if lose, true if not
+	bool gameLogicEatingGame();
 	void removeBall();
 	void displayYouMissed();
 

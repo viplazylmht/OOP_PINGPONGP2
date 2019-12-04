@@ -10,9 +10,12 @@ void Food::CollidePoccess(int& point, Ball& ball)
 	Obstacle::CollidePoccess(point, ball);
 	
 	point++;
+
+	_isVisible = false;
 }
 
 Food::Food() : Obstacle()
 {
 	Random();
+	_text = FOOD_TEXT;
 }

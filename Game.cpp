@@ -103,7 +103,7 @@ void Game::gameLogic()
 	}
 }
 
-void Game::gameLogicEatingGame()
+bool Game::gameLogicEatingGame()
 {
 	Point newPos;
 	newPos.x = ball.X() + ball.HeadingX();
@@ -147,12 +147,15 @@ void Game::gameLogicEatingGame()
 		ball.SetPos({ 45,15 });
 		computersScore += 10;
 
+		return false;
 	}
 
 	if (ball.X() >= GAME_BORDER_RIGHT - 1)
 	{
 		ball.SetHeadingX(-ball.HeadingX());
 	}
+
+	return true;
 }
 
 // INPUT:

@@ -24,22 +24,26 @@ void Obstacle::Draw()
 	if (_isVisible)
 	{
 		//draw
+		setTextColor(_color);
 		gotoXY(_pos.x, _pos.y);
 		cout << _text;
+	}
+	else		//undraw
+	{
+		gotoXY(_pos.x, _pos.y);
+		cout << " ";
 	}
 }
 
 void Obstacle::Random()
-{
-	srand(time(NULL));
-	
+{	
 	_color = rand() % 14 + 1;		//rand int (1-15)
 	
 	int screenWidth = SCREEN_RIGHT - SCREEN_LEFT; 
-	int screenHeight = SCREEN_TOP - SCREEN_BOTTOM;
+	int screenHeight = SCREEN_BOTTOM - SCREEN_TOP;
 
 	_pos.x = screenWidth / 2 + rand() % (screenWidth / 2);		//ensure that pos of obstacle is at least haft of screen
-	_pos.y = screenHeight / 2 + rand() % (screenHeight / 2);		//ensure that pos of obstacle is at least haft of screen
+	_pos.y = 1 + rand() % (screenHeight - 1);		//ensure that pos of obstacle is fit screen
 }
 
 int Obstacle::isNearBall(Ball ball)
@@ -48,10 +52,12 @@ int Obstacle::isNearBall(Ball ball)
 	{
 		return 0;
 	}
-	int dentalX = abs(ball.Pos().y - _pos.y);
-	int dentalY = abs(ball.Pos().x - _pos.x);
-	if ((ball.Pos().x == _pos.x &&  dentalY== 1)
-		|| (ball.Pos().y == _pos.y &&  dentalX== 1))
+
+	int dentalY = abs(ball.Pos().y - _pos.y);
+	int dentalX = abs(ball.Pos().x - _pos.x);
+
+	if ((ball.Pos().x == _pos.x &&  dentalY == 1)
+		|| (ball.Pos().y == _pos.y &&  dentalX == 1))
 	{
 		return 1;
 	}
@@ -68,7 +74,13 @@ bool Obstacle::isCollide(Ball ball)
 	int nextX = ball.Pos().x + ball.HeadingX();
 	int nextY = ball.Pos().y + ball.HeadingY();
 
-	if (nextX == _pos.x && nextY == _pos.y)
+	//collide edge
+	if ((nextX == _pos.x && ball.Pos().y == _pos.y) || (nextY == _pos.y && ball.Pos().x == _pos.x))
+	{
+		return true;
+	}
+	//collide corner
+	if (abs(nextX - _pos.x) == 0 && abs(nextY - _pos.y) == 0)
 	{
 		return true;
 	}
@@ -85,12 +97,12 @@ void Obstacle::CollidePoccess(int& point, Ball& ball)
 		ball.SetHeadingY(-ball.HeadingY());
 	}
 	//if collide edge x
-	else if (ball.X() + ball.HeadingX() == _pos.x)
+	else if (ball.X() + ball.HeadingX() == _pos.x && ball.Y() == _pos.y)
 	{
 		ball.SetHeadingX(-ball.HeadingX());
 	}
 	//if collide edge y
-	else if (ball.Y() + ball.HeadingY() == _pos.x)
+	else if (ball.Y() + ball.HeadingY() == _pos.y && ball.X() == _pos.x)
 	{
 		ball.SetHeadingY(-ball.HeadingY());
 	}

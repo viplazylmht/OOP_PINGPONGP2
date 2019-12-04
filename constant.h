@@ -71,3 +71,8 @@
 #define BONUS_X2_TEXT '2'
 #define MINUS_TEXT '%'
 #define WALL_TEXT char(219)
+#define FOOD_TEXT '*'
+
+#define NUM_FOODS 20
+#define NUM_BONUS 5
+#define MINIMUM_WALL 5
