@@ -52,25 +52,22 @@ void drawPlay()
 {
 	game.clrscr();
 	game.initGame();
-
+	
 	char keyPressed;
 	keyPressed = _getch();
 	DrawBackground();
 	
 	while (keyPressed != key_ESCAPE)
 	{
-
 		game.GetBall().Draw();
-		game.moveBall();
+		game.DrawPads();
 
-		Sleep(50/game.getCount());
+		Sleep(100 / game.getCount());
 
-		game.removeBall();
-
-		game.Keypressed();
 		game.gameLogic();
 
-		DrawBackground();
+		game.MoveBall();
+		game.Keypressed();
 		
 		if (game.getIsPlayer2() == -1)
 		{
@@ -98,7 +95,8 @@ void EatingGame()
 {
 	game.clrscr();
 	game.initGame();
-
+	game.GetComputerPad().SetVisible(false);
+	
 	DrawBackground();
 	
 	char keyPressed;
@@ -107,14 +105,14 @@ void EatingGame()
 	while (keyPressed != key_ESCAPE)
 	{
 		game.GetBall().Draw();
-		game.txtLine(game.GetPlayerPad().x, game.GetPlayerPad().y, game.GetPlayerPad().x, game.GetPlayerPad().y + 3, DARK_BLUE);
+		game.DrawPads();
 
-		Sleep(50 / game.getCount());
+		Sleep(100 / game.getCount());
 
-		game.removeBall();
-
-		game.Keypressed();
 		game.gameLogicEatingGame();
+
+		game.MoveBall();
+		game.Keypressed();
 		
 		// display score
 		setTextColor(31); 

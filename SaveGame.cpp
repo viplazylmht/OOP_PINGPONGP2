@@ -23,9 +23,9 @@ void SaveGame::SaveGameState(string& name, Ball& ball, Pad& pad, vector<Obstacle
          << ball.X() << SEPERATOR << ball.Y() << SEPERATOR
          << ball.HeadingX() << SEPERATOR << ball.HeadingY() << endl;
 
-    fout << "# Pad - x, y, LEFT, RIGHT" << endl
-         << pad.x << SEPERATOR << pad.y << SEPERATOR 
-         << pad.LEFT << SEPERATOR << pad.RIGHT << endl; 
+    fout << "# Pad - x, y, Length, isVisible" << endl
+         << pad.HeadX() << SEPERATOR << pad.HeadY() << SEPERATOR << pad.Length()
+		<< SEPERATOR << pad.isVisible() << endl;
     
     fout << "# Score" << endl << score << endl;
 
@@ -88,13 +88,12 @@ void SaveGame::LoadGameState(string& name, Ball& ball, Pad& pad, vector<Obstacle
             vector<string> tokens = Tokenlizer(line, SEPERATOR);
             int x = (tokens[0].length() > 0) ? stoi(tokens[0]) : 1;
             int y = (tokens[1].length() > 0) ? stoi(tokens[1]) : 1;
-            int LEFT = (tokens[2].length() > 0) ? stoi(tokens[2]) : 1;
-            int RIGHT = (tokens[3].length() > 0) ? stoi(tokens[3]) : 1;
+            int length = (tokens[2].length() > 0) ? stoi(tokens[2]) : 1;
+            int isVisible = (tokens[3].length() > 0) ? stoi(tokens[3]) : 1;
         
-            pad.x = x;
-            pad.y = y;
-            pad.LEFT = LEFT;
-            pad.RIGHT = RIGHT;
+			pad.SetPoint(x, y);
+			pad.SetLength(length);
+			pad.SetVisible(isVisible);
         }
 
         if (count == 3) {

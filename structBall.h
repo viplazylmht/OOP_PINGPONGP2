@@ -26,4 +26,5 @@ public:
 	void SetHeadingY(int y) { _headingY = y; }
 
 	void Draw();
+	void Erase();
 };
