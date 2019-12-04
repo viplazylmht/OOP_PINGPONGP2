@@ -16,6 +16,7 @@ public:
 	~Game();
 public:
 	Ball& GetBall();
+	Pad& GetPlayerPad();
 	int getCount();
 	int getPlayersScore();
 	int getComputersScore();
@@ -26,6 +27,7 @@ public:
 	void initGame();
 	void Keypressed();
 	void gameLogic();
+	void gameLogicEatingGame();
 	void removeBall();
 	void displayYouMissed();
 

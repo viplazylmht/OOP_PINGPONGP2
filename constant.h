@@ -47,6 +47,12 @@
 #define WALL_LEFT  0
 #define WALL_DOWN  29
 
+#define GAME_BORDER_LEFT 4
+#define GAME_BORDER_RIGHT 74
+
+#define GAME_BORDER_TOP 0
+#define GAME_BORDER_BOTTOM 22
+
 #define xPointer 70
 #define yPointer 15
 
