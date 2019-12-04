@@ -4,8 +4,6 @@ void Bonus::Random()
 {
 	Obstacle::Random();
 
-	srand(time(NULL));
-
 	int type = rand() % 2;		//0: x2		1:x0.5
 
 	if (type == 0)
@@ -29,6 +27,8 @@ void Bonus::CollidePoccess(int& point, Ball& ball)
 	{
 		point /= 2;
 	}
+
+	_isVisible = false;
 }
 
 Bonus::Bonus() : Obstacle()

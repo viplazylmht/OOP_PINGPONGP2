@@ -112,7 +112,7 @@ void Game::gameLogic()
 	}
 }
 
-void Game::gameLogicEatingGame()
+bool Game::gameLogicEatingGame()
 {
 	//Kiem tra xem ball da cham tuong tren hoac duoi chua, neu co thi dao nguoc HeadingY()
 	if ((ball.Y() < SCREEN_TOP) || (ball.Y() > SCREEN_BOTTOM - 2))
@@ -149,12 +149,15 @@ void Game::gameLogicEatingGame()
 		ball.SetPos({ 45,15 });
 		computersScore += 10;
 
+		return false;
 	}
 
 	if (ball.X() >= GAME_BORDER_RIGHT - 1)
 	{
 		ball.SetHeadingX(-ball.HeadingX());
 	}
+
+	return true;
 }
 
 void Game::MoveBall()
