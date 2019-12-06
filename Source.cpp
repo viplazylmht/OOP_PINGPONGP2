@@ -126,7 +126,6 @@ void EatingGame()
 	//create time to create new wall
 	int maxLoop = 100;
 	int loop = 0;		
-
 	char keyPressed;
 	keyPressed = 'a';
 
