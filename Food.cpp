@@ -5,7 +5,7 @@ void Food::Random()
 	Obstacle::Random();
 	_text = '0';
 }
-void Food::CollidePoccess(int& point, Ball& ball)
+void Food::CollidePoccess(float& point, Ball& ball)
 {
 	Obstacle::CollidePoccess(point, ball);
 	

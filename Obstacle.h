@@ -47,5 +47,5 @@ public:
 	//check if obstacle in array collide with ball or nor
 	bool isCollide(Ball ball);
 	//change point base on text + make it invisible + change heading of ball
-	virtual void CollidePoccess(int& point, Ball& ball);
+	virtual void CollidePoccess(float& point, Ball& ball);
 };

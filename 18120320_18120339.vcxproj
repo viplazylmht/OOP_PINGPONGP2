@@ -138,6 +138,7 @@
     <ClCompile Include="Food.cpp" />
     <ClCompile Include="functionConsole.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="Obstacle.cpp" />
     <ClCompile Include="SaveGame.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="Food.h" />
     <ClInclude Include="functionConsole.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="Obstacle.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="SaveGame.h" />

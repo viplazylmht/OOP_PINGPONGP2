@@ -9,6 +9,7 @@
 #include "Bonus.h"
 #include "Wall.h"
 #include "Food.h"
+#include "ObjectManager.h"
 #include <vector>
 #include <memory>
 
@@ -94,162 +95,174 @@ void drawPlay()
 	}
 }
 
-//Return: false if pos is already exit true if not
-bool IsValidPos(vector<shared_ptr<Obstacle>>& obstacles, shared_ptr<Obstacle> newObstacle)
+void ReInitEatingGame(ObjectManager& obstacles, float& score, int& loop)
 {
-	for (auto obstacle : obstacles)
-	{
-		if (obstacle->GetPoint().x == newObstacle->GetPoint().x && (obstacle->GetPoint().y == newObstacle->GetPoint().y))
-		{
-			return false;
-		}
-	}
-	return true;
-}
+	//clear old obstacle and screen and set score to 0
+	obstacles.ClearObject();
+	game.clrscr();
+	score = 0;
 
-vector<shared_ptr<Obstacle>> CreateObstacles()
-{
-	srand(time(NULL));
-	vector<shared_ptr<Obstacle>> obstacles;
-
-	//create foods
-	for (int i = 0; i < NUM_FOODS; i++)
-	{
-		shared_ptr<Obstacle> cur = make_shared<Food>();
-		
-		while (!IsValidPos(obstacles, cur))
-		{
-			cur->Random();
-		}
-
-		obstacles.push_back(cur);
-	}
-
-	//create bonuses
-	for (int i = 0; i < NUM_BONUS; i++)
-	{
-		shared_ptr<Obstacle> cur = make_shared<Bonus>();
-
-		while (!IsValidPos(obstacles, cur))
-		{
-			cur->Random();
-		}
-
-		obstacles.push_back(cur);
-	}
-
-	//create walls
-	for (int i = 0; i < MINIMUM_WALL; i++)
-	{
-		shared_ptr<Obstacle> cur = make_shared<Wall>();
-
-		while (!IsValidPos(obstacles, cur))
-		{
-			cur->Random();
-		}
-
-		obstacles.push_back(cur);
-	}
-
-	return obstacles;
-}
-
-void DrawObstacles(vector<shared_ptr<Obstacle>>& obstacles)
-{
-	for (auto obstacle : obstacles)
-	{
-		obstacle->Draw();
-	}
-}
-
-//check if ball collide with obstacle or not. If collide then proccess if needed
-void CheckAndProccessBallCollideWithObstacles(vector<shared_ptr<Obstacle>>& obstacles, Ball& ball, int& score)
-{
-	vector<shared_ptr<Obstacle>> trivals;		
-	bool isHaveTrival = false;
-
-	int i = 0;
-	for (auto obstacle : obstacles)
-	{
-		int nearBallReturn = obstacle->isNearBall(ball);
-		if (nearBallReturn == 1)		//priority
-		{
-			if (obstacle->isCollide(ball))
-			{
-				obstacle->CollidePoccess(score, ball);
-				return;
-			}
-		}
-		else if (nearBallReturn == 2)		//trivals
-		{
-			trivals.push_back(obstacle);
-			isHaveTrival = true;
-		}
-		i++;
-	}
-
-	//check all trivals
-	for (auto trival : trivals)
-	{
-		if (trival->isCollide(ball))
-		{
-			trival->CollidePoccess(score, ball);
-		}
-	}
+	//reinit game
+	game.initGame();
+	DrawBackground();
+	loop = 0;
+	//crete obstacle
+	obstacles.CreateObstacles();
 }
 
 //play eating game
 void EatingGame()
 {
+	srand(time(NULL));
 	//set point to 0
-	int score = 0;
+	float score = 0;
 	game.clrscr();
 	game.initGame();
 	game.GetComputerPad().SetVisible(false);
 	
 	DrawBackground();
 	//crete food
-	vector<shared_ptr<Obstacle>> obstacles = CreateObstacles();
-	
+	ObjectManager obstacles;
+	//create time to create new wall
+	int maxLoop = 100;
+	int loop = 0;		
 	char keyPressed;
-	keyPressed = _getch();
+	keyPressed = 'a';
 
 	while (keyPressed != key_ESCAPE)
 	{
+		//check if it is needed to make wall
+		maxLoop = game.getCount() * 100;
+		if (loop == maxLoop)
+		{
+			obstacles.CreateNewWall();
+			loop = 0;
+		}
+		else
+		{
+			loop++;
+		}
+
+		//check eat
+		obstacles.CheckAndProccessBallCollideWithObstacles(game.GetBall(), score);
+
+		int isPlaying = game.gameLogicEatingGame();
+
+		if (!isPlaying)		//lose and press play agian
+		{
+			ReInitEatingGame(obstacles, score, loop);
+		}
+
 		//draw ball and player
 		game.GetBall().Draw();
 		game.DrawPads();
 
 		//draw obstacle
-		DrawObstacles(obstacles);
+		obstacles.DrawObstacles();
 
-		CheckAndProccessBallCollideWithObstacles(obstacles, game.GetBall(), score);
+		Sleep(100 / game.getCount());
 
 		//delete old ball and player on screen
 		game.removeBall();
-		Sleep(100 / game.getCount());
-
 
 		game.MoveBall();
-		game.Keypressed();
-		int isPlaying = game.gameLogicEatingGame();
 
-		if (!isPlaying)		//lose and press play agian
+		if (game.Keypressed() == 1)
 		{
-			//clear old obstacle and screen and set score to 0
-			obstacles.clear();
-			game.clrscr();
-			score = 0;
-
-			//reinit game
-			game.initGame();
-			DrawBackground();
-			//crete food
-			obstacles = CreateObstacles();
+			ReInitEatingGame(obstacles, score, loop);
 		}
 		
 		// display score
 		setTextColor(31); 
+		gotoXY(20, 22); cout << "Your Score:             " << score;
+		setTextColor(15);
+
+		//check eat all foods
+		if (obstacles.RemainFood() == 0)
+		{
+			//proccess win
+			game.displayYouWin();
+			ReInitEatingGame(obstacles, score, loop);
+		}
+	}
+}
+
+void ReInitPuzzleGame(ObjectManager& obstacles, float& score)
+{
+	//clear old obstacle and screen and set score to 0
+	obstacles.ClearObject();
+	game.clrscr();
+	score = 0;
+
+	//reinit game
+	game.initGame();
+	DrawBackground();
+	//crete obstacle
+	obstacles.CreatePuzzle();
+}
+
+//play puzzle game
+void PuzzleGame()
+{
+	srand(time(NULL));
+
+	//crete food
+	ObjectManager obstacles;
+
+	obstacles.CreatePuzzle();
+
+	//set point to 0
+	float score = 0;
+	game.clrscr();
+	game.initGame();
+	game.GetComputerPad().SetVisible(false);
+
+	DrawBackground();
+	//vector<shared_ptr<Obstacle>> obstacles = CreateObstacles();
+
+	char keyPressed;
+	keyPressed = _getch();
+
+	while (keyPressed != key_ESCAPE)
+	{
+		//check eat
+		obstacles.CheckAndProccessBallCollideWithObstacles(game.GetBall(), score);
+
+		int isPlaying = game.gameLogicEatingGame();
+
+		if (!isPlaying)		//lose and press play agian
+		{
+			ReInitPuzzleGame(obstacles, score);
+		}
+
+		if (obstacles.RemainFood() == 0)
+		{
+			//proccess win
+			game.displayYouWin();
+			ReInitPuzzleGame(obstacles, score);
+		}
+
+		//draw ball and player
+		game.GetBall().Draw();
+		game.DrawPads();
+
+		//draw obstacle
+		obstacles.DrawObstacles();
+
+		Sleep(100 / game.getCount());
+
+		//delete old ball and player on screen
+		game.removeBall();
+
+		game.MoveBall();
+
+		if (game.Keypressed() == 1)
+		{
+			ReInitPuzzleGame(obstacles, score);
+		}
+
+		// display score
+		setTextColor(31);
 		gotoXY(20, 22); cout << "Your Score:             " << score;
 		setTextColor(15);
 	}
@@ -457,9 +470,10 @@ void draw()
 	setTextColor(CYAN);
 	gotoXY(xNewgame, yNewgame);
 	cout << "NEW GAME";
-	setTextColor(CYAN);
 	gotoXY(xEatingGame, yEatingGame);
 	cout << "NEW EATING GAME";
+	gotoXY(xPuzzleGame, yPuzzleGame);
+	cout << "NEW PUZZLE GAME";
 	setTextColor(PINK);
 	gotoXY(xLoadgame, yLoadgame);
 	cout << "LOAD GAME";
@@ -512,6 +526,12 @@ void draw()
 				//play eating game
 				flag = false;
 				EatingGame();
+			}
+			if (curPosPointer == yPuzzleGame)
+			{
+				//play eating game
+				flag = false;
+				PuzzleGame();
 			}
 			if (curPosPointer == yLoadgame) {}
 			if (curPosPointer == yQuit) 
