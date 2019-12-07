@@ -26,8 +26,8 @@ public:
 
 	void MoveBall();
 	void initGame();
-	void Keypressed();
-	
+	//return 1 if ask new game (use to draw new background
+	int Keypressed();
 	void gameLogic();
 	//Return: false if lose, true if not
 	bool gameLogicEatingGame();
@@ -35,6 +35,7 @@ public:
 	void removePads();
 	void DrawPads();
 	void displayYouMissed();
+	void displayYouWin();
 
 
 	void clrscr();

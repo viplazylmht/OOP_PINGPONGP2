@@ -87,7 +87,7 @@ bool Obstacle::isCollide(Ball ball)
 	return false;
 }
 
-void Obstacle::CollidePoccess(int& point, Ball& ball)
+void Obstacle::CollidePoccess(float& point, Ball& ball)
 {
 	//proccess ball
 	//if collide with corner

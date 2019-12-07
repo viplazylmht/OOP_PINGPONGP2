@@ -20,6 +20,7 @@ Game::Game()
 {
 	PlayersPad = Pad(0, 0, PAD_LENGTH);
 	computersPad = Pad(0, 0, PAD_LENGTH);
+	isPlayer2 = 1;
 }
 Game::~Game()
 {
@@ -115,7 +116,11 @@ void Game::gameLogic()
 bool Game::gameLogicEatingGame()
 {
 	//Kiem tra xem ball da cham tuong tren hoac duoi chua, neu co thi dao nguoc HeadingY()
-	if ((ball.Y() < SCREEN_TOP) || (ball.Y() > SCREEN_BOTTOM - 2))
+	if (ball.Y() < SCREEN_TOP && ball.HeadingY() < 0)
+	{
+		ball.SetHeadingY(-ball.HeadingY());
+	}
+	if (ball.Y() > SCREEN_BOTTOM - 2 && ball.HeadingY() > 0)
 	{
 		ball.SetHeadingY(-ball.HeadingY());
 	}
@@ -140,6 +145,23 @@ bool Game::gameLogicEatingGame()
 	//	}
 	//}
 
+	if (isPlayer2 < 0)
+	{
+		/* let computer track ball's movement */
+		if (ball.X() < GAME_BORDER_RIGHT / 2) {
+			if (ball.Y() < PlayersPad.HeadY() + PlayersPad.Length() / 2) {
+				PlayersPad.MoveUp();
+			}
+			else PlayersPad.MoveDown();
+		}
+		else {
+			// computer go to center
+			if ((GAME_BORDER_BOTTOM - GAME_BORDER_TOP) / 2 < PlayersPad.HeadY() + PlayersPad.Length() / 2) {
+				PlayersPad.MoveUp();
+			}
+			else PlayersPad.MoveDown();
+		}
+	}
 
 	//Kiem tra neu ball khong cham pad
 	if (ball.X() <= GAME_BORDER_LEFT + 1)
@@ -198,14 +220,14 @@ void  Game::initGame()
 	txtLine(GAME_BORDER_LEFT, 0, GAME_BORDER_LEFT, 23, GREY);
 	txtLine(GAME_BORDER_RIGHT, 0, GAME_BORDER_RIGHT, 23, GREY);
 
-	if (isPlayer2 > 0)
-	{
-		setTextColor(79); gotoXY(62, 23); cout << " 2 Player "; setTextColor(15);
-	}
-	else
-	{
-		setTextColor(79); gotoXY(62, 23);  cout << " 1 Player "; setTextColor(15);
-	}
+	//if (isPlayer2 > 0)
+	//{
+	//	setTextColor(79); gotoXY(62, 23); cout << " 2 Player "; setTextColor(15);
+	//}
+	//else
+	//{
+	//	setTextColor(79); gotoXY(62, 23);  cout << " 1 Player "; setTextColor(15);
+	//}
 
 }
 
@@ -241,10 +263,32 @@ void Game::displayYouMissed()
 	}
 }
 
+void Game::displayYouWin()
+{
+	clrbox(10, 8, 70, 16, 79);
+	char a[] = "CONRATULATION YOU WIN";
+	box(10, 8, 70, 16, a);
+
+	gotoXY(18, 10); cout << " ";
+	gotoXY(18, 11); cout << "NICE! You have eat all the food";
+	gotoXY(18, 12); cout << "Press SPACE to EXIT";
+	gotoXY(18, 13); cout << "Press any key to CONTINUE";
+	gotoXY(18, 14); cout << "";
+	keypressed = _getch();
+	if (keypressed == key_SPACE)
+	{
+		clrbox(10, 8, 70, 16, 79);
+
+		clrscr();
+		exit(0);
+	}
+	clrbox(10, 8, 71, 21, 0);
+}
+
 // INPUT: 
 // OUTPUT: 
-// Xu li bat dong bo cac phim nhap vao tuong ung voi cac chuc nang
-void Game::Keypressed()
+// Xu li cac phim nhap vao tuong ung voi cac chuc nang
+int Game::Keypressed()
 {
 	if (GetAsyncKeyState(VK_UP)) {
 		computersPad.MoveUp();
@@ -276,18 +320,19 @@ void Game::Keypressed()
 
 	if (GetAsyncKeyState(VK_N)) {
 		initGame();
+		return 1;
 	};
 
 	if (GetAsyncKeyState(VK_TAB)) {
 		isPlayer2 = -isPlayer2;
-		if (isPlayer2 > 0)
+		/*if (isPlayer2 > 0)
 		{
 			setTextColor(79); gotoXY(62, 23); printf("2 Player "); setTextColor(15);
 		}
 		else
 		{
 			setTextColor(79); gotoXY(62, 23); printf("1 Player  "); setTextColor(15);
-		}
+		}*/
 	};
 }
 

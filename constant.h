@@ -63,25 +63,29 @@
 #define GAME_BORDER_BOTTOM 22
 
 #define xPointer 70
-#define yPointer 15
+#define yPointer 14
 
 #define xNewgame 55
-#define yNewgame 15
-
-#define xLoadgame 55
-#define yLoadgame 19
+#define yNewgame 14
 
 #define xEatingGame 55
-#define yEatingGame 17
+#define yEatingGame 16
+
+#define xPuzzleGame 55
+#define yPuzzleGame 18
+
+#define xLoadgame 55
+#define yLoadgame 20
 
 #define xQuit 55
-#define yQuit 21
+#define yQuit 22
 
 #define BONUS_X2_TEXT '2'
 #define MINUS_TEXT '%'
 #define WALL_TEXT char(219)
 #define FOOD_TEXT '*'
 
-#define NUM_FOODS 20
+#define NUM_FOODS 15
 #define NUM_BONUS 5
-#define MINIMUM_WALL 5
+#define MINIMUM_WALL 0
+#define NUM_PUZZLE_WALL 20
