@@ -6,7 +6,6 @@
 #include "Wall.h"
 #include "Food.h"
 #include "constant.h"
-#include "Game.h"
 
 class ObjectManager
 {
@@ -27,13 +26,11 @@ public:
 	void CreateObstacles();
 
 	void CreatePuzzle();
-	//check by let ball in random start pos then check make it go as far as possible if it eat or not
-	void CreateFoodPuzzle();
 
 	void DrawObstacles();
 
 	//check if ball collide with obstacle or not. If collide then proccess if needed
-	void CheckAndProccessBallCollideWithObstacles(Ball& ball, float& score);
+	void CheckAndProccessBallCollideWithObstacles(Ball& ball, int& score);
 
 	void ClearObject();
 
@@ -42,5 +39,8 @@ public:
 private:
 	//Return: false if pos is already exit true if not
 	bool IsValidPos(shared_ptr<Obstacle> newObstacle);
+
+	//check by let ball in random start pos then check make it go as far as possible if it eat or not
+	void CreateFoodPuzzle();
 };
 

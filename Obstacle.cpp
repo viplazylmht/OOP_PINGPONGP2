@@ -7,7 +7,7 @@ Obstacle::Obstacle()
 	_isVisible = true;
 }
 
-Obstacle::Obstacle(char text, Point pos, int color, bool isVisible)
+Obstacle::Obstacle(char const& text, Point const& pos, int const& color, bool const& isVisible)
 {
 	_text = text;
 	_pos = pos;
@@ -87,7 +87,7 @@ bool Obstacle::isCollide(Ball ball)
 	return false;
 }
 
-void Obstacle::CollidePoccess(float& point, Ball& ball)
+void Obstacle::CollidePoccess(int& point, Ball& ball)
 {
 	//proccess ball
 	//if collide with corner

@@ -21,6 +21,8 @@ Game::Game()
 	PlayersPad = Pad(0, 0, PAD_LENGTH);
 	computersPad = Pad(0, 0, PAD_LENGTH);
 	isPlayer2 = 1;
+
+	_name = "player";
 }
 Game::~Game()
 {
@@ -129,7 +131,7 @@ bool Game::gameLogicEatingGame()
 	if ((ball.Y() >= PlayersPad.HeadY()) && (ball.Y() <= PlayersPad.HeadY() + PlayersPad.Length()) && (ball.X() <= PlayersPad.HeadX() + 1))
 	{
 		ball.SetHeadingX(-ball.HeadingX());
-		playersScore += 10;
+		//playersScore += 10;
 		count /= 0.9;
 	}
 
@@ -151,8 +153,16 @@ bool Game::gameLogicEatingGame()
 		if (ball.X() < GAME_BORDER_RIGHT / 2) {
 			if (ball.Y() < PlayersPad.HeadY() + PlayersPad.Length() / 2) {
 				PlayersPad.MoveUp();
+				if ((ball.Y() >= PlayersPad.HeadY()) && (ball.Y() <= PlayersPad.HeadY() + PlayersPad.Length()) && ball.X() == PlayersPad.HeadX() + 1 && ball.Y() > GAME_BORDER_TOP + 2) {
+					ball.SetPos(ball.X(), ball.Y() - 1);
+				}
 			}
-			else PlayersPad.MoveDown();
+			else {
+				PlayersPad.MoveDown();
+				if ((ball.Y() >= PlayersPad.HeadY()) && (ball.Y() <= PlayersPad.HeadY() + PlayersPad.Length()) && ball.X() == PlayersPad.HeadX() + 1 && ball.Y() > GAME_BORDER_BOTTOM - 2) {
+					ball.SetPos(ball.X(), ball.Y() + 1);
+				}
+			} 
 		}
 		else {
 			// computer go to center
@@ -241,20 +251,28 @@ void Game::displayYouMissed()
 	char a[] = "You missed";
 	box(10, 8, 70, 16, a);
 
-	gotoXY(18, 10); cout << " ";
+	gotoXY(18, 10); cout << "";
 	gotoXY(18, 11); cout << "The ball has missed the paddle";
-	gotoXY(18, 12); cout << "Press SPACE to EXIT";
-	gotoXY(18, 13); cout << "Press any key to CONTINUE";
+	gotoXY(18, 12); cout << "Press SPACE to PLAY AGAIN";
+	gotoXY(18, 13); cout << "Press ESC key to EXIT";
 	gotoXY(18, 14); cout << "";
-	keypressed = _getch();
-	if (keypressed == key_SPACE)
-	{
-		clrbox(10, 8, 70, 16, 79);
+	
+	SaveRanking(_name);
 
-		clrscr();
-		exit(0);
+	while (true)
+	{
+		if (GetAsyncKeyState(VK_SPACE)) {
+			clrbox(10, 8, 71, 21, 0);
+			break;
+		};
+
+		if (GetAsyncKeyState(VK_ESCAPE)) {
+			clrbox(10, 8, 70, 16, 79);
+			clrscr();
+			exit(0);
+			break;
+		};
 	}
-	clrbox(10, 8, 71, 21, 0);
 }
 
 void Game::displayYouWin()
@@ -265,18 +283,168 @@ void Game::displayYouWin()
 
 	gotoXY(18, 10); cout << " ";
 	gotoXY(18, 11); cout << "NICE! You have eat all the food";
-	gotoXY(18, 12); cout << "Press SPACE to EXIT";
-	gotoXY(18, 13); cout << "Press any key to CONTINUE";
+	gotoXY(18, 12); cout << "Press SPACE to PLAY AGAIN";
+	gotoXY(18, 13); cout << "Press ESC key to EXIT";
 	gotoXY(18, 14); cout << "";
-	keypressed = _getch();
-	if (keypressed == key_SPACE)
-	{
-		clrbox(10, 8, 70, 16, 79);
 
-		clrscr();
-		exit(0);
+	SaveRanking(_name);
+
+	while (true)
+	{
+		if (GetAsyncKeyState(VK_SPACE)) {
+			clrbox(10, 8, 71, 21, 0);
+			break;
+		};
+
+		if (GetAsyncKeyState(VK_ESCAPE)) {
+			clrbox(10, 8, 70, 16, 79);
+			clrscr();
+			exit(0);
+			break;
+		};
 	}
-	clrbox(10, 8, 71, 21, 0);
+}
+
+void Game::SaveRanking(string username)
+{
+	// Update listRank
+	SaveGame localhost;
+	vector<Top> listRank;
+
+	localhost.LoadRanking(listRank);
+
+	Top curTop;
+	curTop.name = username;
+	curTop.score = playersScore;
+
+	if (listRank.empty()) {
+		listRank.push_back(curTop);
+	}
+	else {
+		int i = 0;
+		for (; i < listRank.size(); i++) {
+			if (curTop.score > listRank[i].score) break;
+		}
+
+		listRank.insert(listRank.begin() + i, curTop);
+	}
+
+	localhost.SaveRanking(listRank);
+}
+
+void Game::SaveGameState(string name)
+{
+	// Update 
+	SaveGame localhost;
+
+	localhost.SaveGameState(name, ball, PlayersPad, _obstacles.Obstacles(), playersScore);
+
+
+}
+
+void Game::PauseGame()
+{
+	clrbox(10, 8, 70, 16, 79);
+	char a[] = "Game Paused";
+	box(10, 8, 70, 16, a);
+
+	gotoXY(18, 10); cout << "";
+	gotoXY(18, 12); cout << "Press SPACE to CONTINUE";
+	gotoXY(18, 13); cout << "Press ESC key to EXIT";
+	gotoXY(18, 14); cout << "";
+
+	while (true)
+	{
+		if (GetAsyncKeyState(VK_SPACE)) {
+			clrbox(10, 8, 71, 21, 0);
+			break;
+		};
+
+		if (GetAsyncKeyState(VK_ESCAPE)) {
+			clrbox(10, 8, 70, 16, 79);
+			clrscr();
+			setTextColor(WHITE);
+			exit(0);
+			break;
+		};
+	}
+}
+
+void Game::DisplaySavedGame()
+{
+	clrbox(10, 8, 70, 16, 79);
+	char a[] = "Game Saved";
+	box(10, 8, 70, 16, a);
+
+	gotoXY(18, 10); cout << "";
+	gotoXY(18, 12); cout << "Press SPACE to CONTINUE";
+	gotoXY(18, 13); cout << "Press ESC key to EXIT";
+	gotoXY(18, 14); cout << "";
+
+	SaveGameState("curent_state");
+
+	while (true)
+	{
+		if (GetAsyncKeyState(VK_SPACE)) {
+			clrbox(10, 8, 71, 21, 0);
+			break;
+		};
+
+		if (GetAsyncKeyState(VK_ESCAPE)) {
+			clrbox(10, 8, 70, 16, 79);
+			clrscr();
+			setTextColor(WHITE);
+			exit(0);
+			break;
+		};
+	}
+}
+
+void Game::DisplayLoadedGame()
+{
+	clrbox(10, 8, 70, 16, 79);
+	char a[] = "Game Loaded";
+	box(10, 8, 70, 16, a);
+
+	gotoXY(18, 10); cout << "";
+	gotoXY(18, 12); cout << "Press SPACE to CONTINUE";
+	gotoXY(18, 13); cout << "Press ESC key to EXIT";
+	gotoXY(18, 14); cout << "";
+
+	SaveGame localhost;
+	localhost.LoadGameState(_name, ball, PlayersPad, Obstacles().Obstacles(), playersScore);
+
+	while (true)
+	{
+		if (GetAsyncKeyState(VK_SPACE)) {
+			clrbox(10, 8, 71, 21, 0);
+			break;
+		};
+
+		if (GetAsyncKeyState(VK_ESCAPE)) {
+			clrbox(10, 8, 70, 16, 79);
+			clrscr();
+			setTextColor(WHITE);
+			exit(0);
+			break;
+		};
+	}
+}
+
+void Game::DisplayEnterName()
+{
+	clrbox(10, 8, 70, 16, 79);
+	char a[] = "Enter Player Info";
+	box(10, 8, 70, 16, a);
+
+	gotoXY(18, 10); cout << "";
+	gotoXY(18, 12); cout << "Press Enter to CONTINUE";
+	gotoXY(18, 13); cout << "";
+	gotoXY(18, 14); cout << "";
+	gotoXY(18, 11); cout << "Enter your name > ";
+	getline(cin, _name);
+
+	clrbox(10, 8, 71, 17, 0);
 }
 
 // INPUT: 
@@ -284,68 +452,60 @@ void Game::displayYouWin()
 // Xu li cac phim nhap vao tuong ung voi cac chuc nang
 int Game::Keypressed()
 {
-	if (_kbhit())
-	{
-		keypressed = _getch();
-		switch (keypressed)
-		{
+	if (GetAsyncKeyState(VK_UP)) {
+		computersPad.MoveUp();
+	};
 
-		case key_LEFT:
+	if (GetAsyncKeyState(VK_DOWN)) {
+		computersPad.MoveDown();
+	};
+	//
 
-			break;
-
-		case key_RIGHT:
-
-			break;
-
-		case key_UP:
-			computersPad.MoveUp();
-			break;
-
-		case key_DOWN:
-			computersPad.MoveDown();
-			break;
-
-		case key_w:
-		case key_W:
-			PlayersPad.MoveUp();
-			break;
-
-		case key_s:
-		case key_S:
-			PlayersPad.MoveDown();
-			break;
-
-		case key_ENTER:
-			break;
-
-		case key_SPACE:
-			clrscr();
-			exit(0);
-			break;
-
-		case key_n:
-		case key_N:
-			initGame();
-			return 1;
-			break;
-
-		case key_TAB:
-			isPlayer2 = -isPlayer2;
-			//if (isPlayer2 > 0)
-			//{
-			//	setTextColor(79); gotoXY(62, 23); printf("2 Player "); setTextColor(15);
-			//}
-			//else
-			//{
-			//	setTextColor(79); gotoXY(62, 23); printf("1 Player  "); setTextColor(15);
-			//}
-
-			break;
-
-
+	if (GetAsyncKeyState(VK_W)) {
+		PlayersPad.MoveUp();
+		if ((ball.Y() >= PlayersPad.HeadY()) && (ball.Y() <= PlayersPad.HeadY() + PlayersPad.Length()) && ball.X() == PlayersPad.HeadX() + 1 && ball.Y() > GAME_BORDER_TOP + 2) {
+			ball.SetPos(ball.X(), ball.Y() - 1);
 		}
-	}
+	};
+
+	if (GetAsyncKeyState(VK_S)) {
+		PlayersPad.MoveDown();
+		if ((ball.Y() >= PlayersPad.HeadY()) && (ball.Y() <= PlayersPad.HeadY() + PlayersPad.Length()) && ball.X() == PlayersPad.HeadX() + 1 && ball.Y() > GAME_BORDER_BOTTOM - 2) {
+			ball.SetPos(ball.X(), ball.Y() + 1);
+		}
+	};
+
+	if (GetAsyncKeyState(VK_ESCAPE)) {
+		clrscr();
+		exit(0);
+	};
+
+	if (GetAsyncKeyState(VK_N)) {
+		initGame();
+		return 1;
+	};
+
+	if (GetAsyncKeyState(VK_P)) {
+		PauseGame();
+	};
+
+	if (GetAsyncKeyState(VK_L)) {
+		SaveGameState(_name);
+		DisplaySavedGame();
+	};
+
+	if (GetAsyncKeyState(VK_TAB)) {
+		isPlayer2 = -isPlayer2;
+		/*if (isPlayer2 > 0)
+		{
+			setTextColor(79); gotoXY(62, 23); printf("2 Player "); setTextColor(15);
+		}
+		else
+		{
+			setTextColor(79); gotoXY(62, 23); printf("1 Player  "); setTextColor(15);
+		}*/
+	};
+
 	return 0;
 }
 
@@ -373,7 +533,7 @@ void Game::clrscr()
 // INPUT:
 // OUTPUT:
 // tra ra gia tri bien PlayersScore: diem cua nguoi choi
-int Game::getPlayersScore()
+int& Game::getPlayersScore()
 {
 	return playersScore;
 }
@@ -424,6 +584,11 @@ void Game::setIsPlayer2(int data)
 int Game::getIsPlayer2()
 {
 	return isPlayer2;
+}
+
+ObjectManager& Game::Obstacles()
+{
+	return _obstacles;
 }
 
 // INPUT:

@@ -12,16 +12,26 @@
 #include "ObjectManager.h"
 #include <vector>
 #include <memory>
-
-using namespace std;
+#include "SaveGame.h"
 
 Game game;
 void draw();
+void ShowRanking();
 
 void DrawBackground()
 {
 	setTextColor(DARK_YELLOW);
-	ifstream fileTitle("pong.txt", ios::in | ios::out);
+	string filename = "pong.txt";
+	ifstream testf(filename);
+	if (testf.fail()) {
+		// redirect to prev folder that contains data
+		filename = "..\\" + filename;
+	}
+	else {
+		testf.close();
+	}
+
+	ifstream fileTitle(filename, ios::in | ios::out);
 	int xTitle = SCREEN_RIGHT + 1;
 	int yTitle = 0;
 	while (!fileTitle.eof())
@@ -50,6 +60,50 @@ void DrawBackground()
 	gotoXY(45, 15);
 }
 
+void DrawBackgroundV2()
+{
+	setTextColor(DARK_YELLOW);
+	string filename = "pong.txt";
+	ifstream testf(filename);
+	if (testf.fail()) {
+		// redirect to prev folder that contains data
+		filename = "..\\" + filename;
+	}
+	else {
+		testf.close();
+	}
+
+	ifstream fileTitle(filename, ios::in | ios::out);
+	int xTitle = SCREEN_RIGHT + 1;
+	int yTitle = 0;
+	while (!fileTitle.eof())
+	{
+		char lineTemp[255] = "";
+		fileTitle.getline(lineTemp, 255);
+		gotoXY(xTitle, yTitle);
+		cout << lineTemp << endl;
+		yTitle++;
+	}
+
+
+	setTextColor(DARK_CYAN);
+	gotoXY(85, 10);
+	cout << "W   : MoveUp Pad";
+	gotoXY(85, 11);
+	cout << "S   : MoveDown Pad";
+	gotoXY(85, 13);
+	cout << "P   : Pause game";
+	gotoXY(85, 14);
+	cout << "L   : Save Game";
+	gotoXY(85, 16);
+	cout << "N   : New Game";
+	gotoXY(85, 17);
+	cout << "TAB : Switch to Computer/Player";
+	gotoXY(85, 19);
+	cout << "ESC : Quit Game";
+	gotoXY(45, 15);
+}
+
 // INPUT:
 // OUTPUT:
 // Vong lap chinh cua game
@@ -58,21 +112,19 @@ void drawPlay()
 	game.clrscr();
 	game.initGame();
 	
-	char keyPressed;
-	keyPressed = _getch();
 	DrawBackground();
 	
-	while (keyPressed != key_ESCAPE)
+	while (true)
 	{
 		game.GetBall().Draw();
 		game.DrawPads();
 
-		Sleep(100 / game.getCount());
+		Sleep(200 / game.getCount());
 
-		game.gameLogic();
 
 		game.MoveBall();
 		game.Keypressed();
+		game.gameLogic();
 		
 		if (game.getIsPlayer2() == -1)
 		{
@@ -95,7 +147,7 @@ void drawPlay()
 	}
 }
 
-void ReInitEatingGame(ObjectManager& obstacles, float& score, int& loop)
+void ReInitEatingGame(ObjectManager& obstacles, int& score, int& loop)
 {
 	//clear old obstacle and screen and set score to 0
 	obstacles.ClearObject();
@@ -104,38 +156,45 @@ void ReInitEatingGame(ObjectManager& obstacles, float& score, int& loop)
 
 	//reinit game
 	game.initGame();
-	DrawBackground();
+	DrawBackgroundV2();
 	loop = 0;
 	//crete obstacle
 	obstacles.CreateObstacles();
 }
 
 //play eating game
-void EatingGame()
+void EatingGame(bool isLoadState)
 {
 	srand(time(NULL));
 	//set point to 0
-	float score = 0;
+	
+	game.getPlayersScore() = 0;
+
 	game.clrscr();
 	game.initGame();
 	game.GetComputerPad().SetVisible(false);
 	
-	DrawBackground();
+	DrawBackgroundV2();
+
 	//crete food
-	ObjectManager obstacles;
+	if (isLoadState == true) {
+		game.DisplayLoadedGame();
+	}
+	else {
+		game.DisplayEnterName();
+	}
+
 	//create time to create new wall
 	int maxLoop = 100;
 	int loop = 0;		
-	char keyPressed;
-	keyPressed = 'a';
 
-	while (keyPressed != key_ESCAPE)
+	while (true)
 	{
 		//check if it is needed to make wall
 		maxLoop = game.getCount() * 100;
 		if (loop == maxLoop)
 		{
-			obstacles.CreateNewWall();
+			game.Obstacles().CreateNewWall();
 			loop = 0;
 		}
 		else
@@ -144,13 +203,13 @@ void EatingGame()
 		}
 
 		//check eat
-		obstacles.CheckAndProccessBallCollideWithObstacles(game.GetBall(), score);
+		game.Obstacles().CheckAndProccessBallCollideWithObstacles(game.GetBall(), game.getPlayersScore());
 
 		int isPlaying = game.gameLogicEatingGame();
 
 		if (!isPlaying)		//lose and press play agian
 		{
-			ReInitEatingGame(obstacles, score, loop);
+			ReInitEatingGame(game.Obstacles(), game.getPlayersScore(), loop);
 		}
 
 		//draw ball and player
@@ -158,36 +217,33 @@ void EatingGame()
 		game.DrawPads();
 
 		//draw obstacle
-		obstacles.DrawObstacles();
+		game.Obstacles().DrawObstacles();
 
-		Sleep(100 / game.getCount());
-
-		//delete old ball and player on screen
-		game.removeBall();
+		Sleep(200 / game.getCount());
 
 		game.MoveBall();
 
 		if (game.Keypressed() == 1)
 		{
-			ReInitEatingGame(obstacles, score, loop);
+			ReInitEatingGame(game.Obstacles(), game.getPlayersScore(), loop);
 		}
 		
 		// display score
 		setTextColor(31); 
-		gotoXY(20, 22); cout << "Your Score:             " << score;
+		gotoXY(20, 22); cout << "Your Score:             " << game.getPlayersScore();
 		setTextColor(15);
 
 		//check eat all foods
-		if (obstacles.RemainFood() == 0)
+		if (game.Obstacles().RemainFood() == 0)
 		{
 			//proccess win
 			game.displayYouWin();
-			ReInitEatingGame(obstacles, score, loop);
+			ReInitEatingGame(game.Obstacles(), game.getPlayersScore(), loop);
 		}
 	}
 }
 
-void ReInitPuzzleGame(ObjectManager& obstacles, float& score)
+void ReInitPuzzleGame(ObjectManager& obstacles, int& score)
 {
 	//clear old obstacle and screen and set score to 0
 	obstacles.ClearObject();
@@ -196,7 +252,7 @@ void ReInitPuzzleGame(ObjectManager& obstacles, float& score)
 
 	//reinit game
 	game.initGame();
-	DrawBackground();
+	DrawBackgroundV2();
 	//crete obstacle
 	obstacles.CreatePuzzle();
 }
@@ -207,39 +263,35 @@ void PuzzleGame()
 	srand(time(NULL));
 
 	//crete food
-	ObjectManager obstacles;
 
-	obstacles.CreatePuzzle();
+	game.Obstacles().CreatePuzzle();
 
 	//set point to 0
-	float score = 0;
+	game.getPlayersScore() = 0;
 	game.clrscr();
 	game.initGame();
 	game.GetComputerPad().SetVisible(false);
 
-	DrawBackground();
+	DrawBackgroundV2();
 	//vector<shared_ptr<Obstacle>> obstacles = CreateObstacles();
 
-	char keyPressed;
-	keyPressed = _getch();
-
-	while (keyPressed != key_ESCAPE)
+	while (true)
 	{
 		//check eat
-		obstacles.CheckAndProccessBallCollideWithObstacles(game.GetBall(), score);
+		game.Obstacles().CheckAndProccessBallCollideWithObstacles(game.GetBall(), game.getPlayersScore());
 
 		int isPlaying = game.gameLogicEatingGame();
 
-		if (!isPlaying)		//lose and press play agian
+		if (!isPlaying)		//lose and press play again
 		{
-			ReInitPuzzleGame(obstacles, score);
+			ReInitPuzzleGame(game.Obstacles(), game.getPlayersScore());
 		}
 
-		if (obstacles.RemainFood() == 0)
+		if (game.Obstacles().RemainFood() == 0)
 		{
 			//proccess win
 			game.displayYouWin();
-			ReInitPuzzleGame(obstacles, score);
+			ReInitPuzzleGame(game.Obstacles(), game.getPlayersScore());
 		}
 
 		//draw ball and player
@@ -247,23 +299,19 @@ void PuzzleGame()
 		game.DrawPads();
 
 		//draw obstacle
-		obstacles.DrawObstacles();
+		game.Obstacles().DrawObstacles();
 
-		Sleep(100 / game.getCount());
-
-		//delete old ball and player on screen
-		game.removeBall();
-
+		Sleep(200 / game.getCount());
 		game.MoveBall();
 
 		if (game.Keypressed() == 1)
 		{
-			ReInitPuzzleGame(obstacles, score);
+			ReInitPuzzleGame(game.Obstacles(), game.getPlayersScore());
 		}
 
 		// display score
 		setTextColor(31);
-		gotoXY(20, 22); cout << "Your Score:             " << score;
+		gotoXY(20, 22); cout << "Your Score:             " << game.getPlayersScore();
 		setTextColor(15);
 	}
 }
@@ -374,6 +422,7 @@ void newgame()
 // ve man hinh khoi dau cua game, goi cac ham tuong ung voi cac lua chon
 void draw()
 {
+	system("cls");
 	setTextColor(GREY);
 	//
 	//
@@ -405,11 +454,11 @@ void draw()
 		gotoXY(i, 13);
 		cout << char(176);
 
-		gotoXY(i, 23);
+		gotoXY(i, 25);
 		cout << char(176);
 	}
 
-	for (int i = 14; i <= 22; i++)
+	for (int i = 14; i <= 25; i++)
 	{
 		gotoXY(45, i);
 		cout << char(176);
@@ -422,7 +471,7 @@ void draw()
 		gotoXY(WALL_RIGHT / 2 + 2, i);
 		cout << char(219);
 	}
-	for (int i = 24; i <= WALL_DOWN; i++)
+	for (int i = 26; i <= WALL_DOWN; i++)
 	{
 		gotoXY(WALL_RIGHT / 2 + 2, i);
 		cout << char(219);
@@ -451,7 +500,16 @@ void draw()
 	noCursorType();
 	FixConsoleWindow();
 
-	ifstream fileTitle("pong.txt", ios::in | ios::out);
+	string filename = "pong.txt";
+	ifstream testf(filename);
+	if (testf.fail()) {
+		// redirect to prev folder that contains data
+		filename = "..\\" + filename;
+	}
+	else {
+		testf.close();
+	}
+	ifstream fileTitle(filename, ios::in | ios::out);
 
 	int xTitle = 40;
 	int yTitle = 0;
@@ -477,6 +535,9 @@ void draw()
 	setTextColor(PINK);
 	gotoXY(xLoadgame, yLoadgame);
 	cout << "LOAD GAME";
+	setTextColor(YELLOW);
+	gotoXY(xRanking, yRanking);
+	cout << "RANKING";
 	setTextColor(RED);
 	gotoXY(xQuit, yQuit);
 	cout << "QUIT";
@@ -492,10 +553,9 @@ void draw()
 		if (choose == true)
 		{
 			setTextColor(DARK_RED);
-			gotoXY(70, curPosPointer);
+			gotoXY(xPointer, curPosPointer);
 			cout << "<<<";
 		}
-
 
 		keyPressed = _getch();
 
@@ -525,7 +585,7 @@ void draw()
 			{
 				//play eating game
 				flag = false;
-				EatingGame();
+				EatingGame(false);
 			}
 			if (curPosPointer == yPuzzleGame)
 			{
@@ -533,9 +593,16 @@ void draw()
 				flag = false;
 				PuzzleGame();
 			}
-			if (curPosPointer == yLoadgame) {}
-			if (curPosPointer == yQuit) 
+			if (curPosPointer == yLoadgame) {
+				flag = false;
+				EatingGame(true);
+			}
+			if (curPosPointer == yRanking) {
+				ShowRanking();
+			}
+			if (curPosPointer == yQuit)
 			{
+				setTextColor(WHITE);
 				system("cls");
 				break;
 			}
@@ -555,4 +622,56 @@ int main()
 {
 	draw();
 	return 0;
+}
+
+void ShowRanking() {
+
+	game.clrscr();
+
+	SaveGame localhost;
+	vector<Top> listRanking;
+	
+	localhost.LoadRanking(listRanking);
+	
+	gotoXY(55, 1);
+	setTextColor(DARK_YELLOW); cout << "TOP 10 RANKING";
+
+	setTextColor(WHITE);
+	for (int i = 45; i <= 77; i++)
+	{
+		gotoXY(i, 3);
+		cout << char(176);
+
+		gotoXY(i, 26);
+		cout << char(176);
+	}
+
+	for (int i = 3; i <= 26; i++)
+	{
+		gotoXY(45, i);
+		cout << char(176);
+		gotoXY(77, i);
+		cout << char(176);
+	}
+
+	if (listRanking.size() <= 0) {
+		gotoXY(48, 5); cout << "Empty!";
+	}
+
+	else {
+		gotoXY(48, 5);
+		cout << "Top\tName\tScore";
+
+		for (int i = 0; i < listRanking.size(); i++) {
+			Top top = listRanking[i];
+			gotoXY(48, 5 + (i+1) * 2);
+			cout << i + 1 << "\t" << top.name << "\t" << top.score;
+
+			if (i >= 9) break;
+		}
+	}
+
+	getchar();
+	draw();
+	exit(0);
 }

@@ -6,7 +6,7 @@ void Wall::Random()
 
 	_text = WALL_TEXT;
 }
-void Wall::CollidePoccess(float& point, Ball& ball)
+void Wall::CollidePoccess(int& point, Ball& ball)
 {
 	Obstacle::CollidePoccess(point, ball);
 }
@@ -14,4 +14,13 @@ void Wall::CollidePoccess(float& point, Ball& ball)
 Wall::Wall() : Obstacle()
 {
 	Random();
+}
+
+Wall::Wall(char const& text, Point const& pos, int const& color, bool const& isVisible)
+	: Obstacle(text, pos, color, isVisible)
+{
+	_text = text;
+	_pos = pos;
+	_color = color;
+	_isVisible = isVisible;
 }

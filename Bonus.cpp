@@ -15,7 +15,7 @@ void Bonus::Random()
 		_text = MINUS_TEXT;
 	}
 }
-void Bonus::CollidePoccess(float& point, Ball& ball)
+void Bonus::CollidePoccess(int& point, Ball& ball)
 {
 	Obstacle::CollidePoccess(point, ball);
 
@@ -34,4 +34,13 @@ void Bonus::CollidePoccess(float& point, Ball& ball)
 Bonus::Bonus() : Obstacle()
 {
 	Random();
+}
+
+Bonus::Bonus(char const& text, Point const& pos, int const& color, bool const& isVisible)
+	: Obstacle(text, pos, color, isVisible)
+{
+	_text = text;
+	_pos = pos;
+	_color = color;
+	_isVisible = isVisible;
 }

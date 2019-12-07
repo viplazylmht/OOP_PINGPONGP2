@@ -6,9 +6,10 @@ class Food : public Obstacle
 {
 public:
 	void Random();
-	void CollidePoccess(float& point, Ball& ball);
+	void CollidePoccess(int& point, Ball& ball);
 
 public:
 	Food();
+	Food(char const& text, Point const& pos, int const& color, bool const& isVisible);
 };
 

@@ -97,8 +97,8 @@ void ObjectManager::CreatePuzzle()
 
 void ObjectManager::CreateFoodPuzzle()
 {
-	Game game;
-	float score;		//fake
+	Ball ball;
+	int score;		//fake
 
 	Point farthest;		//farthest point
 
@@ -112,28 +112,39 @@ void ObjectManager::CreateFoodPuzzle()
 			headingY = -1;
 		}
 
-		game.GetBall().SetPos({ GAME_BORDER_LEFT + 1, i });
-		game.GetBall().SetHeadingX(1);
-		game.GetBall().SetHeadingY(-1);
+		ball.SetPos({ GAME_BORDER_LEFT + 1, i });
+		ball.SetHeadingX(1);
+		ball.SetHeadingY(-1);
+
 		//move two step
-		game.MoveBall();
-		game.MoveBall();
+		ball.Move();
+		ball.Move();
 
-		while (game.GetBall().Pos().x > GAME_BORDER_LEFT + 2)
+		while (ball.Pos().x > GAME_BORDER_LEFT + 2)
 		{
-			game.GetBall().Draw();
-
 			//check eat
-			CheckAndProccessBallCollideWithObstacles(game.GetBall(), score);
+			CheckAndProccessBallCollideWithObstacles(ball, score);
 
-			game.MoveBall();
+			ball.Move();
 
-			if (game.GetBall().Pos().x > farthest.x)
+			if (ball.Pos().x > farthest.x)
 			{
-				farthest = game.GetBall().Pos();
+				farthest = ball.Pos();
 			}
 
-			int isPlaying = game.gameLogicEatingGame();
+			//check collide border
+			if (ball.Y() < SCREEN_TOP && ball.HeadingY() < 0)
+			{
+				ball.SetHeadingY(-ball.HeadingY());
+			}
+			if (ball.Y() > SCREEN_BOTTOM - 2 && ball.HeadingY() > 0)
+			{
+				ball.SetHeadingY(-ball.HeadingY());
+			}
+			if (ball.X() >= GAME_BORDER_RIGHT - 1)
+			{
+				ball.SetHeadingX(-ball.HeadingX());
+			}
 		}
 
 		if (farthest.x > 2 * (SCREEN_RIGHT - SCREEN_LEFT) / 3)		//ensure that it is hard enough
@@ -159,12 +170,13 @@ void ObjectManager::DrawObstacles()
 	}
 }
 
-void ObjectManager::CheckAndProccessBallCollideWithObstacles(Ball& ball, float& score)
+void ObjectManager::CheckAndProccessBallCollideWithObstacles(Ball& ball, int& score)
 {
-	float oldScore = score;		//to detect if collide food
+	int oldScore = score;		//to detect if collide food
 
 	vector<shared_ptr<Obstacle>> trivals;
-	bool isHaveTrival = false;
+
+	bool isHavePriority = false;
 
 	int i = 0;
 	for (auto obstacle : _obstacles)
@@ -181,14 +193,13 @@ void ObjectManager::CheckAndProccessBallCollideWithObstacles(Ball& ball, float& 
 				{
 					_remainFood--;
 				}
-
-				return;
+				
+				isHavePriority = true;
 			}
 		}
 		else if (nearBallReturn == 2)		//trivals
 		{
 			trivals.push_back(obstacle);
-			isHaveTrival = true;
 		}
 		i++;
 	}
