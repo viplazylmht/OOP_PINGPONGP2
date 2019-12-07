@@ -35,6 +35,13 @@
 #define key_ESCAPE 27
 #define key_TAB 9
 #define key_INSERT 82
+
+#define VK_W 0x57
+#define VK_S 0x53
+#define VK_N 0x4E
+#define VK_L 0x4C
+
+
 #define WIDTH 78
 #define HEIGHT 22
 #define SCREEN_RIGHT WIDTH-2

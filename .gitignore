@@ -334,6 +334,10 @@ Output/*.ilk
 Output/*.pdb
 Output/*.exe
 
-## data dir
+# data dir
 
 data/*
+
+# Vs Code
+
+.vscode/*

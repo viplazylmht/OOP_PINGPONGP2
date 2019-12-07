@@ -20,7 +20,17 @@ void draw();
 void DrawBackground()
 {
 	setTextColor(DARK_YELLOW);
-	ifstream fileTitle("pong.txt", ios::in | ios::out);
+	string filename = "pong.txt";
+	ifstream testf(filename);
+	if (testf.fail()) {
+		// redirect to prev folder that contains data
+		filename = "..\\" + filename;
+	}
+	else {
+		testf.close();
+	}
+
+	ifstream fileTitle(filename, ios::in | ios::out);
 	int xTitle = SCREEN_RIGHT + 1;
 	int yTitle = 0;
 	while (!fileTitle.eof())
@@ -57,21 +67,19 @@ void drawPlay()
 	game.clrscr();
 	game.initGame();
 	
-	char keyPressed;
-	keyPressed = _getch();
 	DrawBackground();
 	
-	while (keyPressed != key_ESCAPE)
+	while (true)
 	{
 		game.GetBall().Draw();
 		game.DrawPads();
 
 		Sleep(100 / game.getCount());
 
-		game.gameLogic();
 
 		game.MoveBall();
 		game.Keypressed();
+		game.gameLogic();
 		
 		if (game.getIsPlayer2() == -1)
 		{
@@ -211,10 +219,12 @@ void EatingGame()
 	//crete food
 	vector<shared_ptr<Obstacle>> obstacles = CreateObstacles();
 	
-	char keyPressed;
-	keyPressed = _getch();
+	/*char keyPressed;
+	keyPressed = _getch();*/
 
-	while (keyPressed != key_ESCAPE)
+	//while (keyPressed != key_ESCAPE)
+
+	while (true)
 	{
 		//draw ball and player
 		game.GetBall().Draw();
@@ -225,10 +235,7 @@ void EatingGame()
 
 		CheckAndProccessBallCollideWithObstacles(obstacles, game.GetBall(), score);
 
-		//delete old ball and player on screen
-		game.removeBall();
 		Sleep(100 / game.getCount());
-
 
 		game.MoveBall();
 		game.Keypressed();
@@ -438,7 +445,16 @@ void draw()
 	noCursorType();
 	FixConsoleWindow();
 
-	ifstream fileTitle("pong.txt", ios::in | ios::out);
+	string filename = "pong.txt";
+	ifstream testf(filename);
+	if (testf.fail()) {
+		// redirect to prev folder that contains data
+		filename = "..\\" + filename;
+	}
+	else {
+		testf.close();
+	}
+	ifstream fileTitle(filename, ios::in | ios::out);
 
 	int xTitle = 40;
 	int yTitle = 0;

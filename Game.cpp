@@ -219,89 +219,76 @@ void Game::displayYouMissed()
 	char a[] = "You missed";
 	box(10, 8, 70, 16, a);
 
-	gotoXY(18, 10); cout << " ";
+	gotoXY(18, 10); cout << "";
 	gotoXY(18, 11); cout << "The ball has missed the paddle";
-	gotoXY(18, 12); cout << "Press SPACE to EXIT";
-	gotoXY(18, 13); cout << "Press any key to CONTINUE";
+	gotoXY(18, 12); cout << "Press SPACE to PLAY AGAIN";
+	gotoXY(18, 13); cout << "Press ESC key to EXIT";
 	gotoXY(18, 14); cout << "";
-	keypressed = _getch();
-	if (keypressed == key_SPACE)
+	
+	while (true)
 	{
-		clrbox(10, 8, 70, 16, 79);
+		if (GetAsyncKeyState(VK_SPACE)) {
+			clrbox(10, 8, 71, 21, 0);
+			break;
+		};
 
-		clrscr();
-		exit(0);
+		if (GetAsyncKeyState(VK_ESCAPE)) {
+			clrbox(10, 8, 70, 16, 79);
+			clrscr();
+			exit(0);
+			break;
+		};
 	}
-	clrbox(10, 8, 71, 21, 0);
 }
 
 // INPUT: 
 // OUTPUT: 
-// Xu li cac phim nhap vao tuong ung voi cac chuc nang
+// Xu li bat dong bo cac phim nhap vao tuong ung voi cac chuc nang
 void Game::Keypressed()
 {
-	if (_kbhit())
-	{
-		keypressed = _getch();
-		switch (keypressed)
-		{
+	if (GetAsyncKeyState(VK_UP)) {
+		computersPad.MoveUp();
+	};
 
-		case key_LEFT:
+	if (GetAsyncKeyState(VK_DOWN)) {
+		computersPad.MoveDown();
+	};
+	//
 
-			break;
-
-		case key_RIGHT:
-
-			break;
-
-		case key_UP:
-			computersPad.MoveUp();
-			break;
-
-		case key_DOWN:
-			computersPad.MoveDown();
-			break;
-
-		case key_w:
-		case key_W:
-			PlayersPad.MoveUp();
-			break;
-
-		case key_s:
-		case key_S:
-			PlayersPad.MoveDown();
-			break;
-
-		case key_ENTER:
-			break;
-
-		case key_SPACE:
-			clrscr();
-			exit(0);
-			break;
-
-		case key_n:
-		case key_N:
-			initGame();
-			break;
-
-		case key_TAB:
-			isPlayer2 = -isPlayer2;
-			if (isPlayer2 > 0)
-			{
-				setTextColor(79); gotoXY(62, 23); printf("2 Player "); setTextColor(15);
-			}
-			else
-			{
-				setTextColor(79); gotoXY(62, 23); printf("1 Player  "); setTextColor(15);
-			}
-
-			break;
-
-
+	if (GetAsyncKeyState(VK_W)) {
+		PlayersPad.MoveUp();
+		if ((ball.Y() >= PlayersPad.HeadY()) && (ball.Y() <= PlayersPad.HeadY() + PlayersPad.Length()) && ball.X() == PlayersPad.HeadX() + 1 && ball.Y() > GAME_BORDER_TOP + 1) {
+			ball.SetPos(ball.X(), ball.Y() - 1);
 		}
-	}
+	};
 
+	if (GetAsyncKeyState(VK_S)) {
+		PlayersPad.MoveDown();
+		if ((ball.Y() >= PlayersPad.HeadY()) && (ball.Y() <= PlayersPad.HeadY() + PlayersPad.Length()) && ball.X() == PlayersPad.HeadX() + 1 && ball.Y() > GAME_BORDER_BOTTOM - 1) {
+			ball.SetPos(ball.X(), ball.Y() + 1);
+		}
+	};
+
+	if (GetAsyncKeyState(VK_ESCAPE)) {
+		clrscr();
+		exit(0);
+	};
+
+	if (GetAsyncKeyState(VK_N)) {
+		initGame();
+	};
+
+	if (GetAsyncKeyState(VK_TAB)) {
+		isPlayer2 = -isPlayer2;
+		if (isPlayer2 > 0)
+		{
+			setTextColor(79); gotoXY(62, 23); printf("2 Player "); setTextColor(15);
+		}
+		else
+		{
+			setTextColor(79); gotoXY(62, 23); printf("1 Player  "); setTextColor(15);
+		}
+	};
 }
 
 //
