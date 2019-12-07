@@ -4,7 +4,7 @@
 #include <string>
 #include "structPad.h"
 #include "structBall.h"
-#include "Obstacle.h"
+#include "ObjectManager.h"
 #include <fstream>
 
 using namespace std;
@@ -16,25 +16,16 @@ struct Top {
 class SaveGame
 {
 public:
-    static const char SEPERATOR = ',';
+    const char SEPERATOR = ',';
 public:
-    SaveGame();
 
-    static void SaveGameState(string& name, Ball&, Pad&, vector<Obstacle>&, int& score);
-    static void LoadGameState(string& name, Ball&, Pad&, vector<Obstacle>&, int& score);
-    static vector<string> Tokenlizer(string line, char SEPERATOR);
+    void SaveGameState(string& name, Ball&, Pad&, vector<shared_ptr<Obstacle>>& obstacles, int& score);
+    void LoadGameState(string& name, Ball&, Pad&, vector<shared_ptr<Obstacle>>& obstacles, int& score);
+    vector<string> Tokenlizer(string line, char SEPERATOR);
 
-    static void LoadRanking(vector<Top>& ranking);
+    void LoadRanking(vector<Top>& ranking);
     
-    static void SaveRanking(vector<Top>& ranking);
-    ~SaveGame();
+    void SaveRanking(vector<Top>& ranking);
 };
 
-SaveGame::SaveGame(/* args */)
-{
-}
-
-SaveGame::~SaveGame()
-{
-}
 

@@ -2,6 +2,8 @@
 
 #include "structBall.h"
 #include "structPad.h"
+#include "SaveGame.h"
+#include "ObjectManager.h"
 
 class Game
 {
@@ -10,6 +12,9 @@ private:
 	Pad  PlayersPad, computersPad;
 	int keypressed, isPlayer2, playersScore, computersScore;
 	float count;
+	ObjectManager _obstacles;
+
+	string _name;
 
 public:
 	Game();
@@ -19,10 +24,11 @@ public:
 	Pad& GetPlayerPad();
 	Pad& GetComputerPad();
 	int getCount();
-	int getPlayersScore();
+	int& getPlayersScore();
 	int getComputersScore();
 	void setIsPlayer2(int data);
 	int getIsPlayer2();
+	ObjectManager& Obstacles();
 
 	void MoveBall();
 	void initGame();
@@ -37,6 +43,12 @@ public:
 	void displayYouMissed();
 	void displayYouWin();
 
+	void SaveRanking(string);
+	void SaveGameState(string);
+	void PauseGame();
+	void DisplaySavedGame();
+	void DisplayLoadedGame();
+	void DisplayEnterName();
 
 	void clrscr();
 	void box(int x, int y, int sx, int sy, char text_[]);

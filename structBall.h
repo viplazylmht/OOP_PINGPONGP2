@@ -27,4 +27,5 @@ public:
 
 	void Draw();
 	void Erase();
+	void Move();
 };

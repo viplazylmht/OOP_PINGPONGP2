@@ -1,9 +1,9 @@
 #include "SaveGame.h"
 
-void SaveGame::SaveGameState(string& name, Ball& ball, Pad& pad, vector<Obstacle>& obstacles, int& score) {
+void SaveGame::SaveGameState(string& name, Ball& ball, Pad& pad, vector<shared_ptr<Obstacle>>& obstacles, int& score) {
     string filename = "data/gamesave.txt";
     // Check if wrong path cause of Open direct execute program in Output folder instead of Visual Studio
-	ofstream testf(filename, ios::in);
+	ofstream testf(filename);
 	if (testf.fail()) {
 		// redirect to prev folder that contains data
 		filename = "..\\" + filename;
@@ -33,15 +33,15 @@ void SaveGame::SaveGameState(string& name, Ball& ball, Pad& pad, vector<Obstacle
 
     for (auto item : obstacles) {
 
-        fout << item.GetText() << SEPERATOR << item.GetColor() << SEPERATOR
-             << item.GetPoint().x << SEPERATOR << item.GetPoint().y << SEPERATOR
-             << (int)item.IsVisible() << endl;
+        fout << item->GetText() << SEPERATOR << item->GetColor() << SEPERATOR
+             << item->GetPoint().x << SEPERATOR << item->GetPoint().y << SEPERATOR
+             << (int)item->IsVisible() << endl;
     }
 
     fout.close();
 }
 
-void SaveGame::LoadGameState(string& name, Ball& ball, Pad& pad, vector<Obstacle>& obstacles, int& score) {
+void SaveGame::LoadGameState(string& name, Ball& ball, Pad& pad, vector<shared_ptr<Obstacle>>& obstacles, int& score) {
     string filename = "data/gamesave.txt";
     // Check if wrong path cause of Open direct execute program in Output folder instead of Visual Studio
 	ifstream testf(filename, ios::in);
@@ -61,7 +61,7 @@ void SaveGame::LoadGameState(string& name, Ball& ball, Pad& pad, vector<Obstacle
     int count = 0;
     obstacles.clear();
 
-    while (getline(cin, line)) {
+    while (getline(fin, line)) {
         if (line.length() <= 0 || line[0] == '#') continue;
 
         if (count == 0) {
@@ -115,8 +115,17 @@ void SaveGame::LoadGameState(string& name, Ball& ball, Pad& pad, vector<Obstacle
             int y = (tokens[3].length() > 0) ? stoi(tokens[3]) : 1;
             int isVisible = (tokens[4].length() > 0) ? stoi(tokens[4]) : false;
 
-            obstacles.push_back(Obstacle(text, {x, y}, color, isVisible));
+            if (text == BONUS_X2_TEXT || text == MINUS_TEXT) {    
+                obstacles.push_back(make_shared<Bonus>(Bonus(text, {x, y}, color, isVisible)));
+            }
             
+            if (text == FOOD_TEXT) {
+                obstacles.push_back(make_shared<Food>(Food(text, { x, y }, color, isVisible)));
+            }
+
+            if (text == WALL_TEXT) {
+                obstacles.push_back(make_shared<Wall>(Wall(text, { x, y }, color, isVisible)));
+            }
         }
 
         count++;
@@ -145,7 +154,7 @@ void SaveGame::LoadRanking(vector<Top>& ranking) {
     string line;
     ranking.clear();
 
-    while (getline(cin, line)) {
+    while (getline(fin, line)) {
         if (line.length() <= 0 || line[0] == '#') continue;
         vector<string> tokens = Tokenlizer(line, SEPERATOR);
 
@@ -164,7 +173,7 @@ void SaveGame::LoadRanking(vector<Top>& ranking) {
 void SaveGame::SaveRanking(vector<Top>& ranking) {
     string filename = "data/ranking.txt";
     // Check if wrong path cause of Open direct execute program in Output folder instead of Visual Studio
-	ofstream testf(filename, ios::in);
+	ofstream testf(filename);
 	if (testf.fail()) {
 		// redirect to prev folder that contains data
 		filename = "..\\" + filename;

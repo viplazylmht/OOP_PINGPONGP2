@@ -40,6 +40,7 @@
 #define VK_S 0x53
 #define VK_N 0x4E
 #define VK_L 0x4C
+#define VK_P 0x50
 
 
 #define WIDTH 78
@@ -62,7 +63,7 @@
 #define GAME_BORDER_TOP 0
 #define GAME_BORDER_BOTTOM 22
 
-#define xPointer 70
+#define xPointer 72
 #define yPointer 14
 
 #define xNewgame 55
@@ -77,8 +78,11 @@
 #define xLoadgame 55
 #define yLoadgame 20
 
+#define xRanking 55
+#define yRanking 22
+
 #define xQuit 55
-#define yQuit 22
+#define yQuit 24
 
 #define BONUS_X2_TEXT '2'
 #define MINUS_TEXT '%'
