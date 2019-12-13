@@ -119,7 +119,7 @@ void drawPlay()
 		game.GetBall().Draw();
 		game.DrawPads();
 
-		Sleep(200 / game.getCount());
+		Sleep(2000 / game.getCount());
 
 
 		game.MoveBall();
@@ -131,7 +131,7 @@ void drawPlay()
 			gotoXY(20, 22);
 			cout << "                       ";
 			gotoXY(20, 23);
-			cout << "                       ";
+			cout << "                        ";
 			setTextColor(31); gotoXY(20, 22); cout << "Your Score:             " << game.getPlayersScore(); setTextColor(15);
 			setTextColor(79); gotoXY(20, 23); cout << "Computers Score:        " << game.getComputersScore(); setTextColor(15);
 		}
@@ -185,20 +185,20 @@ void EatingGame(bool isLoadState)
 	}
 
 	//create time to create new wall
-	int maxLoop = 150;
+	int maxLoop = 10000; // 10s
 	int loop = 0;		
 
 	while (true)
 	{
 		//check if it is needed to make wall
-		if (loop == maxLoop)
+		if (loop >= maxLoop)
 		{
 			game.Obstacles().CreateNewWall();
-			loop = 0;
+			loop -= maxLoop;
 		}
 		else
 		{
-			loop++;
+			loop+= 2000 / game.getCount();
 		}
 
 		//check eat
@@ -218,7 +218,7 @@ void EatingGame(bool isLoadState)
 		//draw obstacle
 		game.Obstacles().DrawObstacles();
 
-		Sleep(200 / game.getCount());
+		Sleep(2000 / game.getCount());
 
 		game.MoveBall();
 
@@ -229,6 +229,8 @@ void EatingGame(bool isLoadState)
 		
 		// display score
 		setTextColor(31); 
+		gotoXY(44, 22);
+		cout << "    ";
 		gotoXY(20, 22); cout << "Your Score:             " << game.getPlayersScore();
 		setTextColor(15);
 
@@ -275,20 +277,20 @@ void PuzzleGame()
 	//vector<shared_ptr<Obstacle>> obstacles = CreateObstacles();
 
 	//create time to create new wall
-	int maxLoop = 150;
+	int maxLoop = 10000; // 10s
 	int loop = 0;
 
 	while (true)
 	{
 		//check if it is needed to make wall
-		if (loop == maxLoop)
+		if (loop >= maxLoop)
 		{
 			game.Obstacles().CreateNewWall();
-			loop = 0;
+			loop -= maxLoop;
 		}
 		else
 		{
-			loop++;
+			loop+= 2000 /game.getCount();
 		}
 		//check eat
 		game.Obstacles().CheckAndProccessBallCollideWithObstacles(game.GetBall(), game.getPlayersScore());
@@ -315,7 +317,7 @@ void PuzzleGame()
 		//draw obstacle
 		game.Obstacles().DrawObstacles();
 
-		Sleep(200 / game.getCount());
+		Sleep(2000 / game.getCount());
 		game.MoveBall();
 
 		if (game.Keypressed() == 1)

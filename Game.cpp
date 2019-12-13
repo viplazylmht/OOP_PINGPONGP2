@@ -132,7 +132,7 @@ bool Game::gameLogicEatingGame()
 	{
 		ball.SetHeadingX(-ball.HeadingX());
 		//playersScore += 10;
-		count += 1;
+		count /= 0.9;
 	}
 
 	/* if cheat enabled,let player track ball's movement */
@@ -213,7 +213,7 @@ void  Game::initGame()
 	ball.SetPos({ 15,5 });
 	ball.SetHeadingX(1);
 	ball.SetHeadingY(1);
-	count = 1;
+	count = 10;
 
 	PlayersPad.SetPoint({ 5, 12 });
 	computersPad.SetPoint({ 73, 12 });
@@ -337,7 +337,7 @@ void Game::SaveGameState(string name)
 	// Update 
 	SaveGame localhost;
 
-	localhost.SaveGameState(name, ball, PlayersPad, _obstacles.Obstacles(), playersScore);
+	localhost.SaveGameState(name, ball, PlayersPad, _obstacles.Obstacles(), playersScore, count);
 
 
 }
@@ -381,7 +381,7 @@ void Game::DisplaySavedGame()
 	gotoXY(18, 13); cout << "Press ESC key to EXIT";
 	gotoXY(18, 14); cout << "";
 
-	SaveGameState("curent_state");
+	SaveGameState(this->_name);
 
 	while (true)
 	{
@@ -412,7 +412,7 @@ void Game::DisplayLoadedGame()
 	gotoXY(18, 14); cout << "";
 
 	SaveGame localhost;
-	localhost.LoadGameState(_name, ball, PlayersPad, Obstacles().Obstacles(), playersScore);
+	localhost.LoadGameState(_name, ball, PlayersPad, Obstacles().Obstacles(), playersScore, count);
 
 	while (true)
 	{
@@ -477,6 +477,7 @@ int Game::Keypressed()
 
 	if (GetAsyncKeyState(VK_ESCAPE)) {
 		clrscr();
+		setTextColor(WHITE);
 		exit(0);
 	};
 
