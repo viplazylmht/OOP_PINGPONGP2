@@ -131,7 +131,7 @@ void drawPlay()
 			gotoXY(20, 22);
 			cout << "                       ";
 			gotoXY(20, 23);
-			cout << "                       ";
+			cout << "                        ";
 			setTextColor(31); gotoXY(20, 22); cout << "Your Score:             " << game.getPlayersScore(); setTextColor(15);
 			setTextColor(79); gotoXY(20, 23); cout << "Computers Score:        " << game.getComputersScore(); setTextColor(15);
 		}
@@ -219,7 +219,7 @@ void EatingGame(bool isLoadState)
 		//draw obstacle
 		game.Obstacles().DrawObstacles();
 
-		Sleep(200 / game.getCount());
+		Sleep(100 / game.getCount());
 
 		game.MoveBall();
 
@@ -230,6 +230,8 @@ void EatingGame(bool isLoadState)
 		
 		// display score
 		setTextColor(31); 
+		gotoXY(44, 22);
+		cout << "    ";
 		gotoXY(20, 22); cout << "Your Score:             " << game.getPlayersScore();
 		setTextColor(15);
 

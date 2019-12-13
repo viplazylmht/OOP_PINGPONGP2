@@ -381,7 +381,7 @@ void Game::DisplaySavedGame()
 	gotoXY(18, 13); cout << "Press ESC key to EXIT";
 	gotoXY(18, 14); cout << "";
 
-	SaveGameState("curent_state");
+	SaveGameState(this->_name);
 
 	while (true)
 	{
@@ -477,6 +477,7 @@ int Game::Keypressed()
 
 	if (GetAsyncKeyState(VK_ESCAPE)) {
 		clrscr();
+		setTextColor(WHITE);
 		exit(0);
 	};
 
