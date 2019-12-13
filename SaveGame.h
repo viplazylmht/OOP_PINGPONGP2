@@ -19,8 +19,8 @@ public:
     const char SEPERATOR = ',';
 public:
 
-    void SaveGameState(string& name, Ball&, Pad&, vector<shared_ptr<Obstacle>>& obstacles, int& score);
-    void LoadGameState(string& name, Ball&, Pad&, vector<shared_ptr<Obstacle>>& obstacles, int& score);
+    void SaveGameState(string& name, Ball&, Pad&, vector<shared_ptr<Obstacle>>& obstacles, int& score, float& count);
+    void LoadGameState(string& name, Ball&, Pad&, vector<shared_ptr<Obstacle>>& obstacles, int& score, float& count);
     vector<string> Tokenlizer(string line, char SEPERATOR);
 
     void LoadRanking(vector<Top>& ranking);

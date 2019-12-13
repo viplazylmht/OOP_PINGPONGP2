@@ -1,6 +1,6 @@
 #include "SaveGame.h"
 
-void SaveGame::SaveGameState(string& name, Ball& ball, Pad& pad, vector<shared_ptr<Obstacle>>& obstacles, int& score) {
+void SaveGame::SaveGameState(string& name, Ball& ball, Pad& pad, vector<shared_ptr<Obstacle>>& obstacles, int& score, float& count) {
     string filename = "data/gamesave.txt";
     // Check if wrong path cause of Open direct execute program in Output folder instead of Visual Studio
 	ofstream testf(filename);
@@ -27,7 +27,7 @@ void SaveGame::SaveGameState(string& name, Ball& ball, Pad& pad, vector<shared_p
          << pad.HeadX() << SEPERATOR << pad.HeadY() << SEPERATOR << pad.Length()
 		<< SEPERATOR << pad.isVisible() << endl;
     
-    fout << "# Score" << endl << score << endl;
+    fout << "# Score - Count" << endl << score << SEPERATOR << count << endl;
 
     fout << "# Obstacles - vector<text, color, x, y, isVisible>" << endl;
 
@@ -41,7 +41,7 @@ void SaveGame::SaveGameState(string& name, Ball& ball, Pad& pad, vector<shared_p
     fout.close();
 }
 
-void SaveGame::LoadGameState(string& name, Ball& ball, Pad& pad, vector<shared_ptr<Obstacle>>& obstacles, int& score) {
+void SaveGame::LoadGameState(string& name, Ball& ball, Pad& pad, vector<shared_ptr<Obstacle>>& obstacles, int& score, float& count) {
     string filename = "data/gamesave.txt";
     // Check if wrong path cause of Open direct execute program in Output folder instead of Visual Studio
 	ifstream testf(filename, ios::in);
@@ -58,18 +58,18 @@ void SaveGame::LoadGameState(string& name, Ball& ball, Pad& pad, vector<shared_p
     if (fin.fail()) return;
     
     string line;
-    int count = 0;
+    int d = 0;
     obstacles.clear();
 
     while (getline(fin, line)) {
         if (line.length() <= 0 || line[0] == '#') continue;
 
-        if (count == 0) {
+        if (d == 0) {
             // name
             name = line;
         }
         
-        if (count == 1) {
+        if (d == 1) {
             // Ball
             vector<string> tokens = Tokenlizer(line, SEPERATOR);
             int x = (tokens[0].length() > 0) ? stoi(tokens[0]) : 1;
@@ -83,7 +83,7 @@ void SaveGame::LoadGameState(string& name, Ball& ball, Pad& pad, vector<shared_p
 
         }
 
-        if (count == 2) {
+        if (d == 2) {
             // Pad
             vector<string> tokens = Tokenlizer(line, SEPERATOR);
             int x = (tokens[0].length() > 0) ? stoi(tokens[0]) : 1;
@@ -96,15 +96,17 @@ void SaveGame::LoadGameState(string& name, Ball& ball, Pad& pad, vector<shared_p
 			pad.SetVisible(isVisible);
         }
 
-        if (count == 3) {
+        if (d == 3) {
             // score
             vector<string> tokens = Tokenlizer(line, SEPERATOR);
             int x = (tokens[0].length() > 0) ? stoi(tokens[0]) : 0;
+            int y = (tokens[1].length() > 0) ? stof(tokens[1]) : 10;
 
             score = x;
+            count = y;
         }
 
-        if (count > 3) {
+        if (d > 3) {
             // Obstacles[i]
 
             vector<string> tokens = Tokenlizer(line, SEPERATOR);
@@ -128,7 +130,7 @@ void SaveGame::LoadGameState(string& name, Ball& ball, Pad& pad, vector<shared_p
             }
         }
 
-        count++;
+        d++;
     }
 
     fin.close();

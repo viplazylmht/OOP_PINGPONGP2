@@ -337,7 +337,7 @@ void Game::SaveGameState(string name)
 	// Update 
 	SaveGame localhost;
 
-	localhost.SaveGameState(name, ball, PlayersPad, _obstacles.Obstacles(), playersScore);
+	localhost.SaveGameState(name, ball, PlayersPad, _obstacles.Obstacles(), playersScore, count);
 
 
 }
@@ -412,7 +412,7 @@ void Game::DisplayLoadedGame()
 	gotoXY(18, 14); cout << "";
 
 	SaveGame localhost;
-	localhost.LoadGameState(_name, ball, PlayersPad, Obstacles().Obstacles(), playersScore);
+	localhost.LoadGameState(_name, ball, PlayersPad, Obstacles().Obstacles(), playersScore, count);
 
 	while (true)
 	{
