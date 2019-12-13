@@ -77,25 +77,31 @@ void ObjectManager::CreateObstacles()
 
 void ObjectManager::CreatePuzzle()
 {
-	//ensure that obstacles is empty
-	ClearObject();
-
-	for (int i = 0; i < NUM_PUZZLE_WALL; i++)
+	while (true)
 	{
-		shared_ptr<Obstacle> cur = make_shared<Wall>();
+		//ensure that obstacles is empty
+		ClearObject();
 
-		while (!IsValidPos(cur))
+		for (int i = 0; i < NUM_PUZZLE_WALL; i++)
 		{
-			cur->Random();
+			shared_ptr<Obstacle> cur = make_shared<Wall>();
+
+			while (!IsValidPos(cur))
+			{
+				cur->Random();
+			}
+
+			_obstacles.push_back(cur);
 		}
 
-		_obstacles.push_back(cur);
+		if (CreateFoodPuzzle())
+		{
+			break;
+		}
 	}
-
-	CreateFoodPuzzle();
 }
 
-void ObjectManager::CreateFoodPuzzle()
+bool ObjectManager::CreateFoodPuzzle()
 {
 	Ball ball;
 	int score;		//fake
@@ -120,8 +126,15 @@ void ObjectManager::CreateFoodPuzzle()
 		ball.Move();
 		ball.Move();
 
+		int j = 0;
 		while (ball.Pos().x > GAME_BORDER_LEFT + 2)
 		{
+			j++;
+			if (j > 999)
+			{
+				//may be no way
+				return false;
+			}
 			//check eat
 			CheckAndProccessBallCollideWithObstacles(ball, score);
 
@@ -160,6 +173,8 @@ void ObjectManager::CreateFoodPuzzle()
 	_obstacles.push_back(cur);
 
 	_remainFood = 1;
+
+	return true;
 }
 
 void ObjectManager::DrawObstacles()

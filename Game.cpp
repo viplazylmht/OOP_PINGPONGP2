@@ -132,7 +132,7 @@ bool Game::gameLogicEatingGame()
 	{
 		ball.SetHeadingX(-ball.HeadingX());
 		//playersScore += 10;
-		count /= 0.9;
+		count += 1;
 	}
 
 	/* if cheat enabled,let player track ball's movement */

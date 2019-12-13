@@ -185,13 +185,12 @@ void EatingGame(bool isLoadState)
 	}
 
 	//create time to create new wall
-	int maxLoop = 100;
+	int maxLoop = 150;
 	int loop = 0;		
 
 	while (true)
 	{
 		//check if it is needed to make wall
-		maxLoop = game.getCount() * 100;
 		if (loop == maxLoop)
 		{
 			game.Obstacles().CreateNewWall();
@@ -275,8 +274,22 @@ void PuzzleGame()
 	DrawBackgroundV2();
 	//vector<shared_ptr<Obstacle>> obstacles = CreateObstacles();
 
+	//create time to create new wall
+	int maxLoop = 150;
+	int loop = 0;
+
 	while (true)
 	{
+		//check if it is needed to make wall
+		if (loop == maxLoop)
+		{
+			game.Obstacles().CreateNewWall();
+			loop = 0;
+		}
+		else
+		{
+			loop++;
+		}
 		//check eat
 		game.Obstacles().CheckAndProccessBallCollideWithObstacles(game.GetBall(), game.getPlayersScore());
 
@@ -292,6 +305,7 @@ void PuzzleGame()
 			//proccess win
 			game.displayYouWin();
 			ReInitPuzzleGame(game.Obstacles(), game.getPlayersScore());
+			loop = 0;
 		}
 
 		//draw ball and player
