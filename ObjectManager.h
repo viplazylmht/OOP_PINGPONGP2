@@ -41,6 +41,7 @@ private:
 	bool IsValidPos(shared_ptr<Obstacle> newObstacle);
 
 	//check by let ball in random start pos then check make it go as far as possible if it eat or not
-	void CreateFoodPuzzle();
+	//Return: false if it is cannot create food
+	bool CreateFoodPuzzle();
 };
 
