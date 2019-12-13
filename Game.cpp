@@ -213,7 +213,7 @@ void  Game::initGame()
 	ball.SetPos({ 15,5 });
 	ball.SetHeadingX(1);
 	ball.SetHeadingY(1);
-	count = 1;
+	count = 10;
 
 	PlayersPad.SetPoint({ 5, 12 });
 	computersPad.SetPoint({ 73, 12 });
